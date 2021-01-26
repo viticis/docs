@@ -17,12 +17,7 @@ const siteConfig = {
     { doc: "contribution/contribution-overview", label: "Contribute" },
     { doc: "api/quickstart", label: "API" },
     { search: true },
-    { doc: 'community/quickstart', label: 'Community' },
-    {
-      href: "https://github.com/near/docs/issues",
-      label: "GitHub",
-      external: true,
-    },
+    { doc: 'community/quickstart', label: 'Community' }
   ],
 
   algolia: {
