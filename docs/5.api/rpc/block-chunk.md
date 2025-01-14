@@ -38,7 +38,7 @@ The RPC API enables you to query the network and get details about specific bloc
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
 const response = await near.connection.provider.block({
@@ -77,10 +77,10 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=block \
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
-const response = await near.connection.provider.block(17821130);
+const response = await near.connection.provider.block({blockId: 17821130});
 ```
 
 </TabItem>
@@ -114,11 +114,11 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=block \
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
 const response = await near.connection.provider.block(
-  "7nsuuitwS7xcdGnD9JgrE22cRB2vf2VS4yh1N9S71F4d"
+  {blockId: "7nsuuitwS7xcdGnD9JgrE22cRB2vf2VS4yh1N9S71F4d"}
 );
 ```
 
@@ -275,7 +275,7 @@ When API request fails, RPC server returns a structured error response with a li
 
 Here is the exhaustive list of the error variants that can be returned by `block` method:
 
-<table class="custom-stripe">
+<table className="custom-stripe">
   <thead>
     <tr>
       <th>
@@ -283,6 +283,7 @@ Here is the exhaustive list of the error variants that can be returned by `block
         <code>error.name</code>
       </th>
       <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
       <th>Reason</th>
       <th>Solution</th>
     </tr>
@@ -291,16 +292,18 @@ Here is the exhaustive list of the error variants that can be returned by `block
     <tr>
       <td rowspan="2">HANDLER_ERROR</td>
       <td>UNKNOWN_BLOCK</td>
+      <td>200</td>
       <td>The requested block has not been produced yet or it has been garbage-collected (cleaned up to save space on the RPC node)</td>
       <td>
         <ul>
           <li>Check that the requested block is legit</li>
-          <li>If the block had been produced more than 5 epochs ago, try to send your request to <a href="https://near-nodes.io/intro/node-types#archival-node">an archival node</a></li>
+          <li>If the block had been produced more than 5 epochs ago, try to send your request to <a href="https://near-nodes.io/intro/node-types#archival-node" target="_blank" rel="noopener noreferrer">an archival node</a></li>
         </ul>
       </td>
     </tr>
     <tr>
       <td>NOT_SYNCED_YET</td>
+      <td>200</td>
       <td>The node is still syncing and the requested block is not in the database yet</td>
       <td>
         <ul>
@@ -309,9 +312,10 @@ Here is the exhaustive list of the error variants that can be returned by `block
         </ul>
       </td>
     </tr>
-    <tr class="stripe">
+    <tr className="stripe">
       <td>REQUEST_VALIDATION_ERROR</td>
       <td>PARSE_ERROR</td>
+      <td>400</td>
       <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
       <td>
         <ul>
@@ -323,6 +327,7 @@ Here is the exhaustive list of the error variants that can be returned by `block
     <tr>
       <td>INTERNAL_ERROR</td>
       <td>INTERNAL_ERROR</td>
+      <td>500</td>
       <td>Something went wrong with the node itself or overloaded</td>
       <td>
         <ul>
@@ -365,7 +370,7 @@ Here is the exhaustive list of the error variants that can be returned by `block
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
 const response = await near.connection.provider.experimental_changes_in_block({
@@ -404,7 +409,7 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=EXPERIMENT
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
 const response = await near.connection.provider.experimental_changes_in_block(
@@ -443,7 +448,7 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=EXPERIMENT
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
 const response = await near.connection.provider.experimental_changes_in_block(
@@ -524,7 +529,7 @@ When API request fails, RPC server returns a structured error response with a li
 
 Here is the exhaustive list of the error variants that can be returned by `EXPERIMENTAL_changes_in_block` method:
 
-<table class="custom-stripe">
+<table className="custom-stripe">
   <thead>
     <tr>
       <th>
@@ -532,6 +537,7 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
         <code>error.name</code>
       </th>
       <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
       <th>Reason</th>
       <th>Solution</th>
     </tr>
@@ -540,16 +546,18 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
     <tr>
       <td rowspan="2">HANDLER_ERROR</td>
       <td>UNKNOWN_BLOCK</td>
+      <td>200</td>
       <td>The requested block has not been produced yet or it has been garbage-collected (cleaned up to save space on the RPC node)</td>
       <td>
         <ul>
           <li>Check that the requested block is legit</li>
-          <li>If the block had been produced more than 5 epochs ago, try to send your request to <a href="https://near-nodes.io/intro/node-types#archival-node">an archival node</a></li>
+          <li>If the block had been produced more than 5 epochs ago, try to send your request to <a href="https://near-nodes.io/intro/node-types#archival-node" target="_blank" rel="noopener noreferrer">an archival node</a></li>
         </ul>
       </td>
     </tr>
     <tr>
       <td>NOT_SYNCED_YET</td>
+      <td>200</td>
       <td>The node is still syncing and the requested block is not in the database yet</td>
       <td>
         <ul>
@@ -558,9 +566,10 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
         </ul>
       </td>
     </tr>
-    <tr class="stripe">
+    <tr className="stripe">
       <td>REQUEST_VALIDATION_ERROR</td>
       <td>PARSE_ERROR</td>
+      <td>400</td>
       <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
       <td>
         <ul>
@@ -572,6 +581,7 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
     <tr>
       <td>INTERNAL_ERROR</td>
       <td>INTERNAL_ERROR</td>
+      <td>500</td>
       <td>Something went wrong with the node itself or overloaded</td>
       <td>
         <ul>
@@ -588,7 +598,7 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
 
 ## Chunk Details {#chunk-details}
 
-> Returns details of a specific chunk. You can run a [block details](/api/rpc/setup#block-details) query to get a valid chunk hash.
+> Returns details of a specific chunk. You can run a [block details](/api/rpc/block-chunk#block-details) query to get a valid chunk hash.
 
 - method: `chunk`
 - params:
@@ -610,7 +620,7 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
 const response = await near.connection.provider.chunk({
@@ -644,7 +654,7 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 method=chunk params:='{"chunk
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
 const response = await near.connection.provider.chunk({
@@ -729,7 +739,7 @@ When API request fails, RPC server returns a structured error response with a li
 
 Here is the exhaustive list of the error variants that can be returned by `chunk` method:
 
-<table class="custom-stripe">
+<table className="custom-stripe">
   <thead>
     <tr>
       <th>
@@ -737,6 +747,7 @@ Here is the exhaustive list of the error variants that can be returned by `chunk
         <code>error.name</code>
       </th>
       <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
       <th>Reason</th>
       <th>Solution</th>
     </tr>
@@ -745,16 +756,18 @@ Here is the exhaustive list of the error variants that can be returned by `chunk
     <tr>
       <td rowspan="4">HANDLER_ERROR</td>
       <td>UNKNOWN_BLOCK</td>
+      <td>200</td>
       <td>The requested block has not been produced yet or it has been garbage-collected (cleaned up to save space on the RPC node)</td>
       <td>
         <ul>
           <li>Check that the requested block is legit</li>
-          <li>If the block had been produced more than 5 epochs ago, try to send your request to <a href="https://near-nodes.io/intro/node-types#archival-node">an archival node</a></li>
+          <li>If the block had been produced more than 5 epochs ago, try to send your request to <a href="https://near-nodes.io/intro/node-types#archival-node" target="_blank" rel="noopener noreferrer">an archival node</a></li>
         </ul>
       </td>
     </tr>
     <tr>
       <td>UNKNOWN_CHUNK</td>
+      <td>200</td>
       <td>The requested chunk can't be found in a database</td>
       <td>
         <ul>
@@ -765,6 +778,7 @@ Here is the exhaustive list of the error variants that can be returned by `chunk
     </tr>
     <tr>
       <td>INVALID_SHARD_ID</td>
+      <td>200</td>
       <td>Provided <code>shard_id</code> does not exist</td>
       <td>
         <ul>
@@ -774,6 +788,7 @@ Here is the exhaustive list of the error variants that can be returned by `chunk
     </tr>
     <tr>
       <td>NOT_SYNCED_YET</td>
+      <td>200</td>
       <td>The node is still syncing and the requested chunk is not in the database yet</td>
       <td>
         <ul>
@@ -782,9 +797,10 @@ Here is the exhaustive list of the error variants that can be returned by `chunk
         </ul>
       </td>
     </tr>
-    <tr class="stripe">
+    <tr className="stripe">
       <td>REQUEST_VALIDATION_ERROR</td>
       <td>PARSE_ERROR</td>
+      <td>400</td>
       <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
       <td>
         <ul>
@@ -796,6 +812,7 @@ Here is the exhaustive list of the error variants that can be returned by `chunk
     <tr>
       <td>INTERNAL_ERROR</td>
       <td>INTERNAL_ERROR</td>
+      <td>500</td>
       <td>Something went wrong with the node itself or overloaded</td>
       <td>
         <ul>

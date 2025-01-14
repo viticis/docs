@@ -3,16 +3,13 @@ id: enumeration
 title: Enumeration
 sidebar_label: Enumeration
 ---
+import {Github} from "@site/src/components/codetabs"
 
-In the previous tutorials, you looked at ways to integrate the minting functionality into a skeleton smart contract. In order to get your NFTs to show in the wallet, you also had to deploy a patch fix that implemented one of the enumeration methods. In this tutorial, you'll expand on and finish the rest of the enumeration methods as per the [standard](https://nomicon.io/Standards/NonFungibleToken/Enumeration.html)
+In the previous tutorials, you looked at ways to integrate the minting functionality into a skeleton smart contract. In order to get your NFTs to show in the wallet, you also had to deploy a patch fix that implemented one of the enumeration methods. In this tutorial, you'll expand on and finish the rest of the enumeration methods as per the [standard](https://nomicon.io/Standards/Tokens/NonFungibleToken/Enumeration)
 Now you'll extend the NFT smart contract and add a couple of enumeration methods that can be used to return the contract's state.
 
 
-:::caution
 
-The JS-SDK is currently in **[`Alpha`](https://github.com/near/near-sdk-js/releases/)**. 
-
-:::
 
 ## Introduction
 
@@ -37,27 +34,21 @@ Let's start by opening the  `src/enumeration.ts` file and locating the empty `in
 
 This function should return the total number of NFTs stored on the contract. You can easily achieve this functionality by simply returning the length of the `nftMetadataById` data structure.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/3.enumeration/src/nft-contract/enumeration.ts#L8-L16
-```
+<Github language="js" start="8" end="16" url="https://github.com/near-examples/nft-tutorial-js/blob/3.enumeration/src/nft-contract/enumeration.ts" />
 
 ### NFT Tokens
 
 This function should return a paginated list of `JsonTokens` that are stored on the contract regardless of their owners.
 If the user provides a `from_index` parameter, you should use that as the starting point for which to start iterating through tokens; otherwise it should start from the beginning. Likewise, if the user provides a `limit` parameter, the function shall stop after reaching either the limit or the end of the list.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/3.enumeration/src/nft-contract/enumeration.ts#L18-L43
-```
+<Github language="js" start="18" end="43" url="https://github.com/near-examples/nft-tutorial-js/blob/3.enumeration/src/nft-contract/enumeration.ts" />
 
 ### NFT Supply For Owner
 
 This function should look for all the non-fungible tokens for a user-defined owner, and return the length of the resulting set.
 If there isn't a set of tokens for the provided Account ID, then the function shall return `0`.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/3.enumeration/src/nft-contract/enumeration.ts#L45-L62
-```
+<Github language="js" start="45" end="62" url="https://github.com/near-examples/nft-tutorial-js/blob/3.enumeration/src/nft-contract/enumeration.ts" />
 
 Next, you can use the CLI to query these new methods and validate that they work correctly.
 
@@ -131,8 +122,12 @@ In the [next tutorial](/tutorials/nfts/js/core), you'll implement the core funct
 If you want to see the finished code from this tutorial, you can checkout the `3.enumeration` branch. 
 :::
 
-<!--
-## Bonus track
+:::note Versioning for this article
 
-Have some sort of random NFT displayer frontend
--->
+At the time of this writing, this example works with the following versions:
+
+- near-cli: `3.0.0`
+- NFT standard: [NEP171](https://nomicon.io/Standards/Tokens/NonFungibleToken/Core), version `1.0.0`
+- Enumeration standard: [NEP181](https://nomicon.io/Standards/Tokens/NonFungibleToken/Enumeration), version `1.0.0`
+
+:::

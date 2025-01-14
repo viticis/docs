@@ -2,9 +2,11 @@
 id: count-near
 title: Count on NEAR
 ---
+
+import {CodeTabs, Language, Github} from '@site/src/components/codetabs';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import {CodeTabs, Language, Github} from "@site/components/codetabs"
+import MovingForwardSupportSection from '@site/src/components/MovingForwardSupportSection';
 
 Our counter example is a friendly decentralized app that stores a number and exposes methods to `increment`,
 `decrement`, and `reset` it.
@@ -13,147 +15,308 @@ Our counter example is a friendly decentralized app that stores a number and exp
 
 ---
 
-## Starting the Counter
-You have two options to start the Counter:
-1. **Recommended:** use the app through Gitpod (a web-based interactive environment)
-2. Clone the project locally .
+## Obtaining the Counter Example
 
+You have two options to start the Counter Example.
 
-<Tabs className="language-tabs" groupId="code-tabs">
-  <TabItem value="🌐 JavaScript">
+1. You can use the app through `GitHub Codespaces`, which will open a web-based interactive environment.
+2. Clone the repository locally and use it from your computer.
 
-| Gitpod                                                                                                                                                            | Clone locally                                         |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| <a href="https://gitpod.io/#https://github.com/near-examples/js-counter.git"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" /></a> | 🌐 `https://github.com/near-examples/js-counter.git` |
+| Codespaces                                                                                                             | Clone locally                                  |
+| ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/near-examples/counters) | 🌐 `https://github.com/near-examples/counters` |
+
+---
+
+## Structure of the Example
+
+The example is divided in two main components:
+
+1. The smart contract, available in two flavors: Rust and JavaScript
+2. The frontend, that interacts with an already deployed contract.
+
+<Tabs groupId="code-tabs">
+
+  <TabItem value="js" label="🌐 JavaScript">
+
+```bash
+┌── sandbox-ts # sandbox testing
+│    ├── src
+│    │    └── main.ava.ts
+│    ├── ava.config.cjs
+│    └── package.json
+├── src # contract's code
+│    └── contract.ts
+├── package.json # package manager
+├── README.md
+└── tsconfig.json # test script
+```
 
   </TabItem>
 
-  <TabItem value="🦀 Rust">
+  <TabItem value="rust" label="🦀 Rust">
 
-| Gitpod                                                                                                                                                            | Clone locally                                         |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| <a href="https://gitpod.io/#https://github.com/near-examples/rust-counter.git"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" /></a> | 🦀 `https://github.com/near-examples/rust-counter.git` |
-
-  </TabItem>
-
-  <TabItem value="🚀 AssemblyScript" >
-
-| Gitpod                                                                                                                                                       | Clone locally                                    |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ |
-| <a href="https://gitpod.io/#https://github.com/near-examples/counter.git"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" /></a> | 🚀 `https://github.com/near-examples/counter.git` |
+```bash
+┌── src # contract's code
+│    └── lib.rs
+├── tests # sandbox test
+│    └── test_basics.rs
+├── Cargo.toml # package manager
+├── README.md
+└── rust-toolchain.toml
+```
 
   </TabItem>
 
 </Tabs>
 
-If you choose Gitpod, a new browser window will open automatically with the code. Give it a minute, and the frontend will pop up (ensure the pop-up window is not blocked).
-
-If you are running the app locally, enter the directory where you cloned it and use `yarn` to install dependencies, and `yarn start` to start it.
-
-```bash
-cd counter
-yarn
-yarn deploy
-yarn start
-```
-Your contract will then be **compiled** and **deployed** to an **account** in the `testnet` network. When done, a browser window should open.
-
 ---
 
-## Interacting With the Counter
+## Frontend
+
+The counter example includes a frontend interface designed to interact seamlessly with an existing smart contract that has been deployed. This interface allows users to increase or decrease the counter as needed.
+
+<hr class="subsection" />
+
+### Running the Frontend
+
+To start the frontend you will need to install the dependencies and start the server.
+
+```bash
+cd frontend
+yarn
+yarn dev
+```
+
 Go ahead and login with your NEAR account. If you don't have one, you will be able to create one in the moment. Once logged in, use the `+` and `-` buttons to increase and decrease the counter. Then, use the Gameboy buttons to reset it and make the counter blink an eye!
 
 ![img](/docs/assets/examples/count-on-near.png)
-*Frontend of the Counter*
+_Frontend of the Counter_
+
+<hr class="subsection" />
+
+### Understanding the Frontend
+
+The frontend is a [Next.JS](https://nextjs.org/) project generated by [create-near-app](https://github.com/near/create-near-app). Check `_app.js` and `index.js` to understand how components are displayed and interacting with the contract.
+
+<Language value="js" language="js">
+  <Github fname="_app.js"
+          url="https://github.com/near-examples/counters/blob/main/frontend/src/pages/_app.js"/>
+  <Github fname="index.js"
+          url="https://github.com/near-examples/counters/blob/main/frontend/src/pages/index.js"/>
+</Language>
 
 ---
 
-## Structure of a dApp
+## Smart Contract
 
-Now that you understand what the dApp does, let us take a closer look to its structure:
-
-1. The frontend code lives in the `/frontend` folder.
-2. The smart contract code is in the `/contract` folder.
-
-### Contract
 The contract presents 4 methods: `get_num`, `increment`, `decrement`, and `reset`. The method `get_num` retrieves the current value, and the rest modify it.
 
 <CodeTabs>
-  <Language value="🌐 JavaScript" language="ts">
-    <Github fname="contract.ts" 
-            url="https://github.com/near-examples/js-counter/blob/master/contract/src/contract.ts"
-            start="3" end="29" />
+  <Language value="js" language="ts">
+    <Github fname="contract.ts"
+            url="https://github.com/near-examples/counters/blob/main/contract-ts/src/contract.ts"
+            start="3" end="33" />
   </Language>
-  <Language value="🦀 Rust" language="rust">
+  <Language value="rust" language="rust">
     <Github fname="lib.rs"
-            url="https://github.com/near-examples/rust-counter/blob/master/contract/src/lib.rs"
-            start="5" end="36" />
-  </Language>
-  <Language value="🚀 AssemblyScript" language="ts">
-    <Github fname="index.ts"
-            url="https://github.com/near-examples/counter/blob/master/contract/assembly/index.ts"/>
+            url="https://github.com/near-examples/counters/blob/main/contract-rs/src/lib.rs"
+            start="5" end="37" />
   </Language>
 </CodeTabs>
-
-### Frontend
-The frontend is composed by a single HTML file (`/index.html`). This file defines the components displayed in the screen.
-
-The website's logic lives in `/assets/js/index.js`, which communicates with the contract through `/near-interface.js`. You will notice in `/assets/js/index.js` the following code:
-
-<CodeTabs>
-  <Language value="🌐 JavaScript" language="ts">
-    <Github fname="index.js"
-            url="https://github.com/near-examples/js-counter/blob/master/frontend/index.js"
-            start="10" end="21" />            
-  </Language>
-</CodeTabs>
-
-It indicates our app, when it starts, to check if the user is already logged in and execute either `signedInFlow()` or `signedOutFlow()`.
 
 ---
 
-## Testing
+### Testing the Contract
 
-When writing smart contracts it is very important to test all methods exhaustively. In this
-project you have two types of tests: unit and integration. Before digging in them,
-go ahead and perform the tests present in the dApp through the command `yarn test`.
+The contract readily includes a set of unit and sandbox testing to validate its functionality. To execute the tests, run the following commands:
 
-### Unit test
+<Tabs groupId="code-tabs">
+  <TabItem value="js" label="🌐 JavaScript">
 
-Unit tests check individual functions in the smart contract. Right now only Rust implements unit testing. 
+```bash
+cd contract-ts
+yarn
+yarn test
+```
 
-<CodeTabs>
-  <Language value="🦀 Rust" language="rust">
-    <Github fname="lib.rs"
-            url="https://github.com/near-examples/rust-counter/blob/master/contract/src/lib.rs"
-            start="48" end="69" />
-  </Language>
-  <Language value="🚀 AssemblyScript" language="ts">
-    <Github fname="main.spec.ts"
-            url="https://github.com/near-examples/counter/blob/master/contract/assembly/__tests__/main.spec.ts"
-            start="5" end="44" />
-  </Language>
-</CodeTabs>
+  </TabItem>
+  <TabItem value="rust" label="🦀 Rust">
+  
+  ```bash
+  cd contract-rs
+  cargo test
+  ```
 
-### Integration test
+  </TabItem>
 
-Integration tests are generally written in javascript. They automatically deploy a new
-contract and execute methods on it. In this way, integration tests simulate interactions
-from users in a realistic scenario. You will find the integration tests for the `counter`
-in `tests/integration-tests`.
+</Tabs>
 
-<CodeTabs>
-  <Language value="🌐 JavaScript" language="ts">
-    <Github fname="main.test.js"
-            url="https://github.com/near-examples/js-counter/blob/master/integration-tests/src/main.ava.ts"
-            start="37" end="61" />
-  </Language>
-</CodeTabs>
+:::tip
+The `integration tests` use a sandbox to create NEAR users and simulate interactions with the contract.
+:::
+
+<hr class="subsection" />
+
+### Deploying the Contract to the NEAR network
+
+In order to deploy the contract you will need to create a NEAR account.
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  # Create a new account pre-funded by a faucet
+  near create-account <accountId> --useFaucet
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  # Create a new account pre-funded by a faucet
+  near account create-account sponsor-by-faucet-service <my-new-dev-account>.testnet autogenerate-new-keypair save-to-keychain network-config testnet create
+  ```
+  </TabItem>
+</Tabs>
+
+Go into the directory containing the smart contract (`cd contract-ts` or `cd contract-rs`), build and deploy it:
+
+<Tabs groupId="code-tabs">
+
+  <TabItem value="js" label="🌐 JavaScript">
+
+    ```bash
+    npm run build
+    near deploy <accountId> ./build/counter.wasm
+    ```
+
+  </TabItem>
+  <TabItem value="rust" label="🦀 Rust">
+  
+  ```bash
+  cargo near deploy build-non-reproducible-wasm <accountId>
+  ```
+
+  </TabItem>
+
+</Tabs>
+
+:::tip
+To interact with your contract from the [frontend](#frontend), simply replace the value of the `testnet` key in the `config.js` file.
+:::
+
+
+<hr class="subsection" />
+
+### CLI: Interacting with the Contract
+
+To interact with the contract through the console, you can use the following commands.
+
+#### Get the current number of the counter
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near view counter.near-examples.testnet get_num
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+   near contract call-function as-read-only counter.near-examples.testnet get_num json-args {} network-config testnet now
+  ```
+  </TabItem>
+</Tabs>
+
+<hr class="subsection" />
+
+#### Increment the counter
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  # Replace <accountId> with your account ID
+  near call counter.near-examples.testnet increment --accountId <accountId>
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  # Replace <accountId> with your account ID
+  near contract call-function as-transaction counter.near-examples.testnet increment json-args {} prepaid-gas '30.0 Tgas' attached-deposit '0 NEAR' sign-as aha_6.testnet network-config testnet sign-with-keychain send
+  ```
+  </TabItem>
+</Tabs>
+
+<hr class="subsection" />
+
+#### Decrement the counter
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  # Replace <accountId> with your account ID
+  near call counter.near-examples.testnet decrement --accountId <accountId>
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  # Replace <accountId> with your account ID
+  near contract call-function as-transaction counter.near-examples.testnet decrement json-args {} prepaid-gas '30.0 Tgas' attached-deposit '0 NEAR' sign-as aha_6.testnet network-config testnet sign-with-keychain send
+  ```
+  </TabItem>
+</Tabs>
+
+<hr class="subsection" />
+
+#### Reset the counter to zero
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  # Replace <accountId> with your account ID
+  near call counter.near-examples.testnet reset --accountId <accountId>
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  # Replace <accountId> with your account ID
+  near contract call-function as-transaction counter.near-examples.testnet reset json-args {} prepaid-gas '30.0 Tgas' attached-deposit '0 NEAR' sign-as aha_6.testnet network-config testnet sign-with-keychain send
+  ```
+  </TabItem>
+</Tabs>
+
+:::tip
+If you're using your own account, replace `counter.near-examples.testnet` with your `accountId`.
+:::
 
 ---
 
 ## Moving Forward
 
 A nice way to learn is by trying to expand the contract. Modify it by adding a parameter to `increment` and `decrement`,
-so the user can choose by how much to change the value. For this, you will need to use knowledge from the [anatomy](../../2.develop/contracts/anatomy.md)
-and [storage](../../2.develop/contracts/storage.md) sections.
+so the user can choose by how much to change the value. For this, you will need to use knowledge from the [anatomy](../../2.build/2.smart-contracts/anatomy/anatomy.md)
+and [storage](../../2.build/2.smart-contracts/anatomy/storage.md) sections.
+
+<MovingForwardSupportSection />
+
+:::note Versioning for this article
+
+At the time of this writing, this example works with the following versions:
+
+- near-cli: `4.0.13`
+- node: `18.19.1`
+- rustc: `1.77.0`
+
+:::

@@ -34,7 +34,7 @@ The RPC API enables you to query the gas price for a specific block or hash.
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
 const response = await near.connection.provider.gasPrice(17824600);
@@ -65,7 +65,7 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 method=gas_price params:='[17
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
 const response = await near.connection.provider.gasPrice(
@@ -98,7 +98,7 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 method=gas_price params:='["A
 ```
 
 </TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
+<TabItem value="js" label="🌐 JavaScript" label="JavaScript">
 
 ```js
 const response = await near.connection.provider.gasPrice(null);
@@ -167,6 +167,7 @@ Here is the exhaustive list of the error variants that can be returned by `gas_p
         <code>error.name</code>
       </th>
       <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
       <th>Reason</th>
       <th>Solution</th>
     </tr>
@@ -175,6 +176,7 @@ Here is the exhaustive list of the error variants that can be returned by `gas_p
     <tr>
       <td>HANDLER_ERROR</td>
       <td>UNKNOWN_BLOCK</td>
+      <td>200</td>
       <td>The requested block has not been produced yet or it has been garbage-collected (cleaned up to save space on the RPC node)</td>
       <td>
         <ul>
@@ -186,6 +188,7 @@ Here is the exhaustive list of the error variants that can be returned by `gas_p
     <tr>
       <td>REQUEST_VALIDATION_ERROR</td>
       <td>PARSE_ERROR</td>
+      <td>400</td>
       <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
       <td>
         <ul>
@@ -197,6 +200,7 @@ Here is the exhaustive list of the error variants that can be returned by `gas_p
     <tr>
       <td>INTERNAL_ERROR</td>
       <td>INTERNAL_ERROR</td>
+      <td>500</td>
       <td>Something went wrong with the node itself or overloaded</td>
       <td>
         <ul>

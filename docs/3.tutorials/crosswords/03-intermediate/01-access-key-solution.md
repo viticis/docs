@@ -25,13 +25,13 @@ There have been several incidents of this and it continues to be an issue.
 
 <figure>
     <img src={puzzleFrontrun} alt="Tweet talking about a puzzle where tens of thousands of dollars were taken because of a frontrun attack" width="600"/>
-    <figcaption>Real-life example of a puzzle being front-run.<br/>Read <a href="https://twitter.com/_anishagnihotri/status/1444113372715356162" target="_blank">Anish Agnihotri's thread</a></figcaption>
+    <figcaption>Real-life example of a puzzle being front-run.<br/>Read <a href="https://twitter.com/_anishagnihotri/status/1444113372715356162" target="_blank" rel="noopener noreferrer">Anish Agnihotri's thread</a></figcaption>
 </figure>
 <br/>
 
 ## How?
 
-We're doing to do something unique — and frankly unusual — with our crossword puzzle. We're going to use function-call access keys in a new way.
+We're going to do something unique — and frankly unusual — with our crossword puzzle. We're going to use function-call access keys in a new way.
 
 Our crossword puzzle smart contract will add a function-call access key to itself. The private key is derived from the solution, used as a seed phrase.
 
@@ -45,13 +45,13 @@ A seed phrase is a series of words (usually 12 or 24 words) that create a privat
 Seed phrases typically use a [BIP-30 wordlist](https://github.com/bitcoin/bips/blob/master/bip-0039/bip-0039-wordlists.md), but *they do not need to* use a wordlist or have a certain number of words. As long as the words create entropy, a crossword puzzle solution can act as a deterministic seed phrase.
 :::
 
-So when we add a new puzzle, we'll use the `AddKey` Action to add a limited, function-call access key can that *only* call the `submit_solution` method.
+So when we add a new puzzle, we'll use the `AddKey` Action to add a limited, function-call access key that can *only* call the `submit_solution` method.
 
 The first user to solve the puzzle will essentially "discover" the private key and call that method. Think of it like a safe that contains a function-call access key.
 
 <figure>
     <img src={padlockSafe} alt="A small safe with a padlock containing words to a seed phrase, and you can see through the safe, showing it holds a function-call access key. Art created by soulless.near."/>
-    <figcaption className="full-width">Open the safe using answers to the puzzle, revealing the function-call access key.<br/>Art by <a href="https://twitter.com/ZeroSerotonin__" target="_blank">soulless.near</a></figcaption>
+    <figcaption className="full-width">Open the safe using answers to the puzzle, revealing the function-call access key.<br/>Art by <a href="https://twitter.com/ZeroSerotonin__" target="_blank" rel="noopener noreferrer">soulless.near</a></figcaption>
 </figure><br/>
 
 Our method `submit_solution` no longer needs to hash the plaintext answer, but instead looks at the key that signed this transaction. Cool, huh!

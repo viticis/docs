@@ -3,6 +3,9 @@ sidebar_position: 4
 sidebar_label: "Linkdrop contract"
 title: "Introducing the linkdrop contract we can use"
 ---
+import {Github} from "@site/src/components/codetabs";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 import createMainnetAccount from '/docs/assets/crosswords/create-mainnet-account.png';
 import createTestnetAccount from '/docs/assets/crosswords/create-testnet-wallet-account.png';
@@ -21,14 +24,14 @@ When a user signs up for a testnet account on NEAR Wallet, they'll see this:
 
 <img src={createTestnetAccount} width="400" />
 
-Let's discuss how this testnet account gets created. 
+Let's discuss how this testnet account gets created.
 
 Notice the new account will end in `.testnet`. This is because the account `testnet` will create a subaccount (like we learned about [earlier in this tutorial](../01-basics/02-add-functions-call.md#create-a-subaccount)) called `vacant-name.testnet`.
 
 There are two ways to create this subaccount:
 
 1. Use a full-access key for the account `testnet` to sign a transaction with the `CreateAccount` Action.
-2. In a smart contract deployed to the `testnet` account, call the `CreateAccount` Action, which is an async method that returns a Promise. (More info about writing a [`CreateAccount` Promise](/sdk/rust/promises/create-account).)
+2. In a smart contract deployed to the `testnet` account, call the `CreateAccount` Action, which is an async method that returns a Promise. (More info about writing a [`CreateAccount` Promise](../../../2.build/2.smart-contracts/anatomy/actions.md#create-a-sub-account))
 
 (In the example below that uses NEAR CLI to create a new account, it's calling `CreateAccount` on the linkdrop contract that is deployed to the top level "near" account on mainnet.)
 
@@ -37,9 +40,23 @@ There are two ways to create this subaccount:
 
 On mainnet, the account `near` also has the linkdrop contract deployed to it.
 
-Using NEAR CLI, a person can create a mainnet account by calling the linkdrop contract, like shown below:
+Using NEAR CLI, a person can create a `mainnet` account by calling the linkdrop contract, like shown below:
 
-<img src={createMainnetAccount} />
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call near create_account '{"new_account_id": "aloha.near", "new_public_key": "3cQ...tAT"}' --gas 300000000000000 --deposit 15 --accountId mike.near --networkId mainnet
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction near create_account json-args '{"new_account_id": "aloha.near", "new_public_key": "3cQ...tAT"}' prepaid-gas '300.0 Tgas' attached-deposit '15 NEAR' sign-as mike.near network-config mainnet sign-with-keychain
+    ```
+  </TabItem>
+</Tabs>
 
 The above command calls the `create_account` method on the account `near`, and would create `aloha.near` **if it's available**, funding it with 15 Ⓝ.
 
@@ -51,13 +68,11 @@ We'll want to write a smart contract that calls that same method. However, thing
 
 Here, we'll show the implementation of the `create_account` method. Note the `#[payable]` macro, which allows this function to accept an attached deposit. (Remember in the CLI command we were attaching 15 Ⓝ.)
 
-```rust reference
-https://github.com/near/near-linkdrop/blob/ba94a9c7292d3b48a0a8ba380fb0e7ff6b24efc6/src/lib.rs#L125-L149
-```
+<Github language="rust" start="128" end="152" url="https://github.com/near/near-linkdrop/blob/master/src/lib.rs" />
 
 The most important part of the snippet above is around the middle where there's:
 
-```rs
+```rust
 Promise::new(...)
     ...
     .then(
@@ -81,22 +96,18 @@ if creation_result {...}
 
 ```
 
-In other programming languages promises might work like this, but we must use callbacks instead. 
+In other programming languages promises might work like this, but we must use callbacks instead.
 :::
 
 ### The callback
 
 Now let's look at the callback:
 
-```rust reference
-https://github.com/near/near-linkdrop/blob/ba94a9c7292d3b48a0a8ba380fb0e7ff6b24efc6/src/lib.rs#L151-L164
-```
+<Github language="rust" start="199" end="212" url="https://github.com/near/near-linkdrop/blob/master/src/lib.rs" />
 
 This calls the private helper method `is_promise_success`, which basically checks to see that there was only one promise result, because we only attempted one Promise:
 
-```rust reference
-https://github.com/near/near-linkdrop/blob/ba94a9c7292d3b48a0a8ba380fb0e7ff6b24efc6/src/lib.rs#L32-L42
-```
+<Github language="rust" start="35" end="45" url="https://github.com/near/near-linkdrop/blob/master/src/lib.rs" />
 
 Note that the callback returns a boolean. This means when we modify our crossword puzzle to call the linkdrop contract on `testnet`, we'll be able to determine if the account creation succeeded or failed.
 
@@ -105,7 +116,7 @@ And that's it! Now we've seen a method and a callback in action for a simple con
 :::tip This is important
 Understanding cross-contract calls and callbacks is quite important in smart contract development.
 
-Since NEAR's transactions are asynchronous, the use of callbacks may be a new paradigm shift for smart contract developers from other ecosystems. 
+Since NEAR's transactions are asynchronous, the use of callbacks may be a new paradigm shift for smart contract developers from other ecosystems.
 
 Feel free to dig into the linkdrop contract and play with the ideas presented in this section.
 

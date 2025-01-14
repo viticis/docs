@@ -4,6 +4,9 @@ title: Minting NFTs
 sidebar_label: Minting NFTs
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 In this tutorial you'll learn how to easily create your own NFTs without doing any software development by using a readily-available smart contract and a decentralized storage solution like [IPFS](https://ipfs.io/).
 
 ## Overview {#overview}
@@ -15,19 +18,18 @@ Once the contract is deployed, you'll learn [how to mint](#minting-your-nfts) no
 
 To complete this tutorial successfully, you'll need:
 
-- [Rust toolchain](/develop/prerequisites)
+- [Rust toolchain](/build/smart-contracts/quickstart#prerequisites)
 - [A NEAR account](#wallet)
-- [nft.storage account](#uploading-the-image)
-- [NEAR command-line interface](/tools/near-cli#setup) (`near-cli`)
+- [NEAR command-line interface](/tools/near-cli#installation) (`near-cli`)
 
 ## Wallet {#wallet}
 
-To store your non-fungible tokens you'll need a [NEAR Wallet](https://wallet.testnet.near.org/).
-If you don't have one yet, you can create one easily by following [these instructions](https://wallet.testnet.near.org/create).
+To store your non-fungible tokens you'll need a [NEAR Wallet](https://testnet.mynearwallet.com//).
+If you don't have one yet, you can create one easily by following [these instructions](https://testnet.mynearwallet.com/create).
 
 > **Tip:** for this tutorial we'll use a `testnet` wallet account. The `testnet` network is free and there's no need to deposit funds.
 
-Once you have your Wallet account, you can click on the [Collectibles](https://wallet.testnet.near.org/?tab=collectibles) tab where all your NFTs will be listed:
+Once you have your Wallet account, you can click on the [Collectibles](https://testnet.mynearwallet.com//?tab=collectibles) tab where all your NFTs will be listed:
 
 ![Wallet](/docs/assets/nfts/nft-wallet.png)
 
@@ -41,24 +43,17 @@ The [InterPlanetary File System](https://ipfs.io/) (IPFS) is a protocol and peer
 
 ### Uploading the image {#uploading-the-image}
 
-To upload the NFT image, we are going to use the free [NFT Storage](https://nft.storage/#getting-started) service
-built specifically for storing off-chain NFT data.
-NFT Storage offers free decentralized storage and bandwidth for NFTs on [IPFS](https://ipfs.io/) and [Filecoin](https://filecoin.io/).
+To upload the NFT image, you should use a [decentralized storage](/concepts/storage/storage-solutions) provider such as IPFS.
 
-#### Steps {#steps}
+:::note
+This example uses IPFS, but you could use a different solution like Filecoin, Arweave, or a regular centralized Web2 hosting.
+:::
 
-1. [Register an account](https://nft.storage/login/) and log in to [nft.storage](https://nft.storage/login/).
+Once you have uploaded your file to IPFS, you'll get a unique `CID` for your content, and a URL like:
 
-2. Go to the [Files](https://nft.storage/files/) section, and click on the [Upload](https://nft.storage/new-file/) button.
-
-   ![nft.storage](/docs/assets/nfts/nft-storage.png)
-
-3. Once you have uploaded your file, you'll get a unique `CID` for your content, and a URL like:
-   ```
-   https://bafyreiabag3ztnhe5pg7js4bj6sxuvkz3sdf76cjvcuqjoidvnfjz7vwrq.ipfs.dweb.link/
-   ```
-
-> **Tip:** check the [NFT.Storage Docs](https://nft.storage/api-docs/) for information on uploading multiple files and available API endpoints.
+```
+https://bafyreiabag3ztnhe5pg7js4bj6sxuvkz3sdf76cjvcuqjoidvnfjz7vwrq.ipfs.dweb.link/
+```
 
 ## Non-fungible Token contract {#non-fungible-token-contract}
 
@@ -86,8 +81,8 @@ At first, the code can be a bit overwhelming, but if we only consider the aspect
 The contract keeps track of two pieces of information - `tokens` and `metadata`. For the purpose of this tutorial we will only deal with the `tokens` field.
 
 ```rust
-#[near_bindgen]
-#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
+#[near(contract_state)]
+#[derive(PanicOnDefault)]
 pub struct Contract {
     tokens: NonFungibleToken,
     metadata: LazyOption<NFTContractMetadata>,
@@ -143,19 +138,21 @@ self.owner_by_id.insert(&token_id, &owner_id);
 To build your contract run the following command in your terminal which builds your contract using Rust's `cargo`.
 
 ```bash
-./scripts/build.sh
+cargo near build
 ```
 
 This will generate WASM binaries into your `res/` directory. This WASM file is the smart contract we'll be deploying onto the NEAR blockchain.
 
-> **Tip:** If you run into errors make sure you have [Rust installed](/develop/prerequisites) and are in the root directory of the NFT example.
+:::tip
+If you run into errors make sure you have [Rust installed](/build/smart-contracts/quickstart#prerequisites) and are in the root directory of the NFT example.
+:::
 
 ### Testing the contract {#testing-the-contract}
 
 Written in the smart contract there are pre-written tests that you can run. Run the following command in your terminal to perform these simple tests to verify that your contract code is working.
 
 ```bash
-cargo test -- --nocapture
+cargo test
 ```
 
 > **Note:** the more complex simulation tests aren't performed with this command but you can find them in `tests/sim`.
@@ -169,13 +166,26 @@ and start using it [mint your NFTs](#minting-your-nfts).
 
 This smart contract will be deployed to your NEAR account. Because NEAR allows the ability to upgrade contracts on the same account, initialization functions must be cleared.
 
-> **Note:** If you'd like to run this example on a NEAR account that has had prior contracts deployed, please use the `near-cli` command `near delete` and then recreate it in Wallet. To create (or recreate) an account, please follow the directions in [Test Wallet](https://wallet.testnet.near.org) or ([NEAR Wallet](https://wallet.near.org/) if we're using `mainnet`).
+> **Note:** If you'd like to run this example on a NEAR account that has had prior contracts deployed, please use the `near-cli` command `near delete` and then recreate it in Wallet. To create (or recreate) an account, please follow the directions in [Test Wallet](https://testnet.mynearwallet.com/) or ([NEAR Wallet](https://wallet.near.org/) if we're using `mainnet`).
 
 Log in to your newly created account with `near-cli` by running the following command in your terminal.
 
-```bash
-near login
-```
+<Tabs groupId="cli-tabs">
+
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near login --networkId testnet
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  near account import-account using-web-wallet network-config testnet
+  ```
+  </TabItem>
+</Tabs>
 
 To make this tutorial easier to copy/paste, we're going to set an environment variable for your account ID. In the command below, replace `YOUR_ACCOUNT_NAME` with the account name you just logged in with including the `.testnet` (or `.near` for `mainnet`):
 
@@ -193,7 +203,7 @@ Verify that the correct account ID is printed in the terminal. If everything loo
 In the root of your NFT project run the following command to deploy your smart contract.
 
 ```bash
-near deploy --wasmFile res/non_fungible_token.wasm --accountId $ID
+near deploy $ID res/non_fungible_token.wasm
 ```
 
 <details>
@@ -201,17 +211,16 @@ near deploy --wasmFile res/non_fungible_token.wasm --accountId $ID
 <p>
 
 ```bash
-Starting deployment. Account id: ex-1.testnet, node: https://rpc.testnet.near.org, helper: https://helper.testnet.near.org, file: res/non_fungible_token.wasm
+Starting deployment. Account id: ex-1.testnet, node: https://rpc.testnet.near.org, file: res/non_fungible_token.wasm
 Transaction Id E1AoeTjvuNbDDdNS9SqKfoWiZT95keFrRUmsB65fVZ52
 To see the transaction in the transaction explorer, please open this url in your browser
-https://explorer.testnet.near.org/transactions/E1AoeTjvuNbDDdNS9SqKfoWiZT95keFrRUmsB65fVZ52
+https://testnet.nearblocks.io/txns/E1AoeTjvuNbDDdNS9SqKfoWiZT95keFrRUmsB65fVZ52
 Done deploying to ex-1.testnet
 ```
 
 </p>
 </details>
 
-> **Note:** For `mainnet` you will need to prepend your command with `NEAR_ENV=mainnet`. [See here](/tools/near-cli#network-selection) for more information.
 
 ### Minting your NFTs {#minting-your-nfts}
 
@@ -221,17 +230,41 @@ In our case, we need to initialize the NFT contract before usage. For now, we'll
 > **Note:** each account has a data area called `storage`, which is persistent between function calls and transactions.
 > For example, when you initialize a contract, the initial state is saved in the persistent storage.
 
-```bash
-near call $ID new_default_meta '{"owner_id": "'$ID'"}' --accountId $ID
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
 
-> **Tip:** you can find more info about the NFT metadata at [nomicon.io](https://nomicon.io/Standards/NonFungibleToken/Metadata.html).
+  ```bash
+  near call $ID new_default_meta '{"owner_id": "'$ID'"}' --accountId $ID
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction $ID new_default_meta json-args '{"owner_id": "'$ID'"}' prepaid-gas '100.0 Tgas' attached-deposit '0 NEAR' sign-as $ID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
+
+> **Tip:** you can find more info about the NFT metadata at [nomicon.io](https://nomicon.io/Standards/Tokens/NonFungibleToken/Metadata).
 
 You can then view the metadata by running the following `view` call:
 
-```bash
-near view $ID nft_metadata
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near view $ID nft_metadata
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-read-only $ID nft_metadata json-args '{}' network-config testnet now
+    ```
+  </TabItem>
+</Tabs>
 
 <details>
 <summary>Example response: </summary>
@@ -254,9 +287,21 @@ near view $ID nft_metadata
 
 Now let's mint our first token! The following command will mint one copy of your NFT. Replace the `media` url with the one you [uploaded to IPFS](#uploading-the-image) earlier:
 
-```bash
-near call $ID nft_mint '{"token_id": "0", "receiver_id": "'$ID'", "token_metadata": { "title": "Some Art", "description": "My NFT media", "media": "https://bafkreiabag3ztnhe5pg7js4bj6sxuvkz3sdf76cjvcuqjoidvnfjz7vwrq.ipfs.dweb.link/", "copies": 1}}' --accountId $ID --deposit 0.1
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call $ID nft_mint '{"token_id": "0", "receiver_id": "'$ID'", "token_metadata": { "title": "Some Art", "description": "My NFT media", "media": "https://bafkreiabag3ztnhe5pg7js4bj6sxuvkz3sdf76cjvcuqjoidvnfjz7vwrq.ipfs.dweb.link/", "copies": 1}}' --accountId $ID --deposit 0.1
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction $ID nft_mint json-args '{"token_id": "0", "receiver_id": "'$ID'", "token_metadata": { "title": "Some Art", "description": "My NFT media", "media": "https://bafkreiabag3ztnhe5pg7js4bj6sxuvkz3sdf76cjvcuqjoidvnfjz7vwrq.ipfs.dweb.link/", "copies": 1}}' prepaid-gas '100.0 Tgas' attached-deposit '0.1 NEAR' sign-as $ID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
 
 <details>
 <summary>Example response: </summary>
@@ -289,9 +334,21 @@ near call $ID nft_mint '{"token_id": "0", "receiver_id": "'$ID'", "token_metadat
 
 To view tokens owned by an account you can call the NFT contract with the following `near-cli` command:
 
-```bash
-near view $ID nft_tokens_for_owner '{"account_id": "'$ID'"}'
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near view $ID nft_tokens_for_owner '{"account_id": "'$ID'"}'
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-read-only $ID nft_tokens_for_owner json-args '{"account_id": "'$ID'"}' network-config testnet now
+    ```
+  </TabItem>
+</Tabs>
 
 <details>
 <summary>Example response: </summary>
@@ -326,7 +383,7 @@ near view $ID nft_tokens_for_owner '{"account_id": "'$ID'"}'
 
 > <br/>
 >
-> **Tip:** after you mint your first non-fungible token, you can [view it in your Wallet](https://wallet.testnet.near.org/?tab=collectibles):
+> **Tip:** after you mint your first non-fungible token, you can [view it in your Wallet](https://testnet.mynearwallet.com//?tab=collectibles):
 >
 > ![Wallet with token](/docs/assets/nfts/nft-wallet-token.png)
 >
@@ -340,18 +397,16 @@ This basic example illustrates all the required steps to deploy an NFT smart con
 and start minting your own non-fungible tokens.
 
 Now that you're familiar with the process, you can check out our [NFT Example](https://examples.near.org/NFT) and learn more about the smart contract code and how you can transfer minted tokens to other accounts.
-Finally, if you are new to Rust and want to dive into smart contract development, our [Quick-start guide](/develop/quickstart-guide) is a great place to start.
+Finally, if you are new to Rust and want to dive into smart contract development, our [Quick-start guide](../../2.build/2.smart-contracts/quickstart.md) is a great place to start.
 
 **_Happy minting!_** 🪙
 
-## Blockcraft - a Practical Extension
-
-If you'd like to learn how to use Minecraft to mint NFTs and copy/paste builds across different worlds while storing all your data on-chain, be sure to check out our [Minecraft tutorial](/tutorials/nfts/minecraft-nfts)
-
-## Versioning for this article {#versioning-for-this-article}
+:::note Versioning for this article
 
 At the time of this writing, this example works with the following versions:
 
-- cargo: `cargo 1.54.0 (5ae8d74b3 2021-06-22)`
-- rustc: `rustc 1.54.0 (a178d0322 2021-07-26)`
-- near-cli: `2.1.1`
+- cargo: `cargo 1.83.0 (5ffbef321 2024-10-29)`
+- rustc: `rustc 1.83.0 (90b35a623 2024-11-26)`
+- near-cli-rs: `0.16.1`
+
+:::

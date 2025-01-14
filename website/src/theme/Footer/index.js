@@ -5,107 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
 import { useThemeConfig } from '@docusaurus/theme-common';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-import isInternalUrl from '@docusaurus/isInternalUrl';
-import styles from './styles.module.css';
-import ThemedImage from '@theme/ThemedImage';
-//import IconExternalLink from '@theme/IconExternalLink';
-
-function FooterLink({ to, href, label, prependBaseUrlToHref, ...props }) {
-  const toUrl = useBaseUrl(to);
-  const normalizedHref = useBaseUrl(href, {
-    forcePrependBaseUrl: true,
-  });
-  return (
-    <Link
-      className="footer__link-item"
-      {...(href
-        ? {
-          href: prependBaseUrlToHref ? normalizedHref : href,
-        }
-        : {
-          to: toUrl,
-        })}
-      {...props}>
-      {href && !isInternalUrl(href) ? (
-        <span>
-          {label}
-          <IconExternalLink />
-        </span>
-      ) : (
-        label
-      )}
-    </Link>
-  );
-}
-
-const FooterLogo = ({ sources, alt }) => (
-  <ThemedImage className="footer__logo" alt={alt} sources={sources} />
-);
+import './footer.scss';
 
 function Footer() {
   const { footer } = useThemeConfig();
-  const { copyright, links = [], logo = {} } = footer || {};
-  const sources = {
-    light: useBaseUrl(logo.src),
-    dark: useBaseUrl(logo.srcDark || logo.src),
-  };
 
   if (!footer) {
     return null;
   }
 
   return (
-    <footer className="relative pt-100 pb-40 md:pb-100 bg-black text-white mt-150">
-      <div className="absolute pin-t pin-r" style={{ maxWidth: "50vw" }}>
-        <img
-          src="https://near.org/wp-content/themes/near-19/assets/img/neue/distortion-footer.svg?t=1600963469"
-          className="locked"
-          style={{ transform: "translateY(-60%)" }}
-          alt=""
-        ></img>
-      </div>
-      <div className="container">
+    <footer className="footer">
+      <div id="google_translate_element"></div>
+      <div>
+      <div className="container relative text-white pb-40 md:pb-100 pt-100">
         <div className="row">
-          <div className="col md:w-1/4">
-            <img
-              src="https://near.org/wp-content/themes/near-19/assets/img/neue/logomark-white.svg?t=1600963474"
-              className="locked"
-              width="91"
-              alt=""
-            ></img>
-            <ul className="list-reset text-24 font-black text-yellow mt-50">
-              <li>
-                <a
-                  href="https://mynearwallet.com/"
-                  className="hover:text-white"
-                >
-                  Wallet
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://explorer.near.org/"
-                  className="hover:text-white"
-                >
-                  Explorer
-                </a>
-              </li>
-              <li>
-                <a href="https://near.dev/" className="hover:text-white">
-                  Examples
-                </a>
-              </li>
-              <li>
-                <a href="https://wiki.near.org/" className="hover:text-white">
-                  Wiki
-                </a>
-              </li>
-            </ul>
-          </div>
           <div className="col md:w-3/4 mt-50 md:mt-0" style={{ zIndex: "1" }}>
             <ul className="list-reset flex flex-wrap -mx-20">
               <li className="mx-20">
@@ -199,23 +114,6 @@ function Footer() {
               </li>
               <li className="mx-20">
                 <a
-                  href="https://near.org/wechat"
-                  className="block hover:text-wechat"
-                  target="_blank"
-                >
-                  <span className="icon icon-36 ">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 576 512"
-                    >
-                      <path d="M385.2 167.6c6.4 0 12.6.3 18.8 1.1C387.4 90.3 303.3 32 207.7 32 100.5 32 13 104.8 13 197.4c0 53.4 29.3 97.5 77.9 131.6l-19.3 58.6 68-34.1c24.4 4.8 43.8 9.7 68.2 9.7 6.2 0 12.1-.3 18.3-.8-4-12.9-6.2-26.6-6.2-40.8-.1-84.9 72.9-154 165.3-154zm-104.5-52.9c14.5 0 24.2 9.7 24.2 24.4 0 14.5-9.7 24.2-24.2 24.2-14.8 0-29.3-9.7-29.3-24.2.1-14.7 14.6-24.4 29.3-24.4zm-136.4 48.6c-14.5 0-29.3-9.7-29.3-24.2 0-14.8 14.8-24.4 29.3-24.4 14.8 0 24.4 9.7 24.4 24.4 0 14.6-9.6 24.2-24.4 24.2zM563 319.4c0-77.9-77.9-141.3-165.4-141.3-92.7 0-165.4 63.4-165.4 141.3S305 460.7 397.6 460.7c19.3 0 38.9-5.1 58.6-9.9l53.4 29.3-14.8-48.6C534 402.1 563 363.2 563 319.4zm-219.1-24.5c-9.7 0-19.3-9.7-19.3-19.6 0-9.7 9.7-19.3 19.3-19.3 14.8 0 24.4 9.7 24.4 19.3 0 10-9.7 19.6-24.4 19.6zm107.1 0c-9.7 0-19.3-9.7-19.3-19.6 0-9.7 9.7-19.3 19.3-19.3 14.5 0 24.4 9.7 24.4 19.3.1 10-9.9 19.6-24.4 19.6z"></path>
-                    </svg>
-                  </span>
-                  <span className="screen-reader-text">WeChat</span>
-                </a>
-              </li>
-              <li className="mx-20">
-                <a
                   href="https://www.youtube.com/channel/UCuKdIYVN8iE3fv8alyk1aMw"
                   className="block hover:text-youtube"
                   target="_blank"
@@ -233,104 +131,334 @@ function Footer() {
               </li>
             </ul>
             <div className="row">
-              <div className="col sm:w-1/3 mt-50">
+            <div className="col sm:w-1/3 mt-50">
                 <h2 className="text-24 font-black text-blue-light">
-                  Developers
+                  <a href="/concepts/basics/protocol">
+                    Concepts
+                  </a>
                 </h2>
                 <ul
-                  id="menu-developers-1"
-                  className="footer-menu list-reset mt-5 text-16 md:text-18"
+                  id="menu-concepts-1"
+                  className="footer-menu list-reset mt-5 text-16 md:text-16"
                 >
-                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-550">
-                    <a href="https://near.org/developers/">Overview</a>
-                  </li>
-                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2801">
-                    <a href="https://near.org/technology/">Technology</a>
-                  </li>
-                  <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-116">
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://github.com/near"
-                      id="github"
-                    >
-                      GitHub
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/concepts/basics/protocol">
+                      What is Near?
                     </a>
                   </li>
-                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-4720">
-                    <a href="https://near.org/bounties/">Bounties</a>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/concepts/protocol/account-model">
+                      Accounts
+                    </a>
                   </li>
-                  <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-580">
-                    <a href="https://near.org/grants/">
-                      Grants
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/concepts/protocol/transactions">
+                      Transactions
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/concepts/data-flow/near-data-flow">
+                      Data Flow
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/concepts/basics/tokens">
+                      Token
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/concepts/storage/storage-staking">
+                      Storage
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/concepts/basics/validators">
+                      Validators
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/build/chain-abstraction/what-is">
+                      Chain Abstraction
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/concepts/data-flow/near-data-flow">
+                      Data on Blockchain
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/concepts/basics/runtime">
+                      Runtime
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/concepts/web3/intro">
+                      Web3 Intro
                     </a>
                   </li>
                 </ul>
               </div>
               <div className="col sm:w-1/3 mt-50">
                 <h2 className="text-24 font-black text-blue-light">
-                  Community
+                  <a href="/build/smart-contracts/quickstart">
+                    Build
+                  </a>
                 </h2>
                 <ul
-                  id="menu-community-1"
-                  className="footer-menu list-reset mt-5 text-16 md:text-18"
+                  id="menu-build-1"
+                  className="footer-menu list-reset mt-5 text-16 md:text-16"
                 >
-                  <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-6804">
-                    <a href="https://gov.near.org/">Forum</a>
-                  </li>
-                  <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-4650">
-                    <a href="https://near.events">Events</a>
-                  </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
-                    <a href="https://near.org/community">
-                      Contributor Program
+                    <a href="/build/chain-abstraction/what-is">
+                      Chain Abstraction
                     </a>
                   </li>
-                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-4157">
-                    <a href="https://near.org/guilds/">Guild Program</a>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/build/smart-contracts/what-is">
+                      Smart Contracts
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/build/web3-apps/what-is">
+                      Web3 Apps
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/build/primitives/what-is">
+                      Primitives
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/build/chain-abstraction/data-availability">
+                      Data Availability
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/build/data-infrastructure/what-is">
+                      Data Infrastructure
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div className="col sm:w-1/3 mt-50">
+                <h2 className="text-24 font-black text-blue-light">
+                  <a href="/tutorials/welcome">
+                    Tutorials
+                  </a>
+                </h2>
+                <ul
+                  id="menu-tutorials-1"
+                  className="footer-menu list-reset mt-5 text-16 md:text-16"
+                >
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/tutorials/examples/count-near">
+                    Smart Contract
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/tutorials/nfts/minting-nfts">
+                      Mint NFTs
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/tutorials/fts/introduction">
+                      FTs
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/build/data-infrastructure/lake-framework/near-lake-state-changes-indexer">
+                      Indexers
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://github.com/near-examples" target="_blank" rel="noopener noreferrer">
+                      Examples
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div className="col sm:w-1/3 mt-50">
+                <h2 className="text-24 font-black text-blue-light">
+                  <a href="/api/rpc/introduction">
+                    RPC
+                  </a>
+                </h2>
+                <ul
+                  id="menu-rpc-1"
+                  className="footer-menu list-reset mt-5 text-16 md:text-16"
+                >
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/api/rpc/providers">
+                      RPC Providers
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/api/rpc/setup">
+                      Setup
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/api/rpc/access-keys">
+                      Access Keys
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/api/rpc/contracts">
+                      Contracts
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div className="col sm:w-1/3 mt-50">
+                <h2 className="text-24 font-black text-blue-light">
+                  <a href="/tools/welcome">
+                    Tools
+                  </a>
+                </h2>
+                <ul
+                  id="menu-rpc-1"
+                  className="footer-menu list-reset mt-5 text-16 md:text-16"
+                >
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/tools/near-api">
+                      API
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/tools/sdk">
+                      SDK
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/tools/near-cli">
+                      CLI
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/tools/wallet-selector">
+                      Wallet Selector
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/build/chain-abstraction/fastauth-sdk">
+                      FastAuth
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/build/chain-abstraction/what-is">
+                      Relayers
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://docs.welldonestudio.io/code/getting-started" target="_blank" rel="noopener noreferrer">
+                      Remix IDE
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://wallet.near.org" target="_blank" rel="noopener noreferrer">
+                      Wallets
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://near-faucet.io/" target="_blank" rel="noopener noreferrer">
+                      Faucet
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/tools/explorer">
+                      Explorers
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/tools/indexing">
+                      Indexing
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div className="col sm:w-1/3 mt-50">
+                <h2 className="text-24 font-black text-blue-light">
+                  Resources
+                </h2>
+                <ul
+                  id="menu-developers-1"
+                  className="footer-menu list-reset mt-5 text-16 md:text-16"
+                >
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://dev.near.org/devhub.near/widget/app" target="_blank" rel="noopener noreferrer">
+                      DevHub
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://learnnear.club/" target="_blank" rel="noopener noreferrer">
+                      Learn NEAR Club
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://agorapp.dev/catalog/course?difficulty=&chains=near" target="_blank" rel="noopener noreferrer">
+                      AgorApp
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="/blog">
+                      Blog
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://github.com/near" target="_blank" rel="noopener noreferrer">
+                      GitHub
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://discord.gg/GZ7735Xjce" target="_blank" rel="noopener noreferrer">
+                      Discord Support
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://t.me/neardev" target="_blank" rel="noopener noreferrer">
+                      Telegram Support
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://nomicon.io/" target="_blank" rel="noopener noreferrer">
+                      Protocol Docs
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://near-nodes.io/" target="_blank" rel="noopener noreferrer">
+                      Validator Docs
+                    </a>
+                  </li>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                    <a href="https://aurora.dev/" target="_blank" rel="noopener noreferrer">
+                      Aurora EVM
+                    </a>
                   </li>
                   <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-2945">
                     <a
                       target="_blank"
                       rel="noopener noreferrer"
-                      href="https://openwebcollective.com"
+                      href="https://near.org/founders"
                     >
                       Startup Accelerator
                     </a>
                   </li>
-                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-4719">
-                    <a href="https://near.org/bounties/">Bounties</a>
+                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2045">
+                  <a href="https://wiki.near.org" target="_blank" rel="noopener noreferrer">
+                    Wiki
+                  </a>
                   </li>
-                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-7161">
-                    <a href="https://near.org/tokens/">Tokens</a>
+                  <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-6804">
+                    <a href="https://gov.near.org" target="_blank" rel="noopener noreferrer">Forum</a>
                   </li>
-                </ul>
-              </div>
-              <div className="col sm:w-1/3 mt-50">
-                <h2 className="text-24 font-black text-blue-light">About</h2>
-                <ul
-                  id="menu-about-1"
-                  className="footer-menu list-reset mt-5 text-16 md:text-18"
-                >
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-441">
-                    <a href="https://near.org/about/">About Us</a>
+                    <a href="https://near.org/about" target="_blank" rel="noopener noreferrer">About Us</a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-124">
-                    <a href="https://near.org/careers/">Careers</a>
-                  </li>
-                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-400">
-                    <a href="https://near.org/backers/">Backers</a>
-                  </li>
-                  <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-3490">
-                    <a href="https://near.org/downloads/NEAR_PressKit.zip">
-                      Press Kit
-                    </a>
-                  </li>
-                  <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2419">
-                    <a href="https://near.org/brand/">Brand Guidelines</a>
+                    <a href="https://careers.near.org/jobs" target="_blank" rel="noopener noreferrer">Careers</a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-3267">
-                    <a href="https://near.org/privacy/">Privacy Policy</a>
+                    <a href="https://near.org/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
                   </li>
                 </ul>
               </div>
@@ -339,19 +467,19 @@ function Footer() {
         </div>
 
         <p className="text-14 mt-50 md:mt-100">Copyright &copy;
-          {new Date().getFullYear()} <a href="https://near.org" className="hover:text-yellow">NEAR Protocol</a><span className="mx-10">|</span>All rights
+          {new Date().getFullYear()} <a href="https://near.org" target="_blank" rel="noopener noreferrer" className="hover:text-yellow">NEAR Protocol</a><span className="mx-10">|</span>All rights
           reserved<span className="mx-10">|</span>
           <a href="mailto:hello@near.org" className="hover:text-yellow">
             hello@near.org
           </a>
           <span className="mx-10">|</span>
-          <a href="https://near.org/privacy/" className="hover:text-yellow">
+          <a href="https://near.org/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-yellow">
             Privacy Policy
           </a>
           <span className="mx-10">|</span>
-          Some icons created by <a href="https://www.flaticon.com/free-icons/coin" title="coin icons">Good Ware, Flaticon, and Freepick</a>
+          Some icons created by <a href="https://www.flaticon.com/free-icons/coin" target="_blank" rel="noopener noreferrer" title="coin icons">Good Ware, Flaticon, and Freepick</a>
         </p>
-      </div>
+      </div></div>
     </footer>
   );
 }

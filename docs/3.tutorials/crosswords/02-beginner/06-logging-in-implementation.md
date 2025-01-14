@@ -3,6 +3,9 @@ sidebar_position: 6
 sidebar_label: "Access keys and login 2/2"
 title: "Implementing the login button"
 ---
+import {Github} from "@site/src/components/codetabs";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 import loggingIn from '/docs/assets/crosswords/logging-in.png';
 import explorerTransfer from '/docs/assets/crosswords/chapter-2-explorer-transfer.jpg';
@@ -13,7 +16,7 @@ import explorerTransfer from '/docs/assets/crosswords/chapter-2-explorer-transfe
 
 We're going to add a login button that uses `near-api-js` to login with NEAR.
 
-Below is the workflow of logging in: 
+Below is the workflow of logging in:
 
 <img src={loggingIn} alt="Three steps to logging in. 1. click the login button we will build. 2. It creates a private key in the browser local storage. 3. Redirected to NEAR Wallet where you sign, creating a new key"/><br/><br/>
 
@@ -32,9 +35,7 @@ We won't go over every change, but instead point to the new logic.
 
 First we set up a `WalletConnection` object from our JavaScript library:
 
-```js reference
-https://github.com/near-examples/crossword-tutorial-chapter-2/blob/1d64bf29c3376a18c71e5c5a075e29824d7a55f5/src/index.js#L12-L20
-```
+<Github language="js" start="12" end="20" url="https://github.com/near-examples/crossword-tutorial-chapter-2/blob/1d64bf29c3376a18c71e5c5a075e29824d7a55f5/src/index.js" />
 
 It's then used in React:
 
@@ -125,27 +126,74 @@ We'll also make other minor changes like adding a page for when there are no puz
 
 If you've been following this guide closely, you'll likely just need to start the React app with:
 
-    env CONTRACT_NAME=crossword.friend.testnet npm run start
+```bash
+env CONTRACT_NAME=crossword.friend.testnet npm run start
+```
 
-As a helpful reminder, below has the steps necessary to recreate the subaccount, build the contract, deploy the subaccount, and call methods on the contract:
+As a helpful reminder, below has the steps necessary to recreate the subaccount, build the contract, deploy the subaccount, and call methods on the contract.
+
+Go into the directory containing the Rust smart contract and build it:
 
 ```bash
-# Go into the directory containing the Rust smart contract we've been working on
 cd contract
 
-# Build (for Windows it's build.bat)
-./build.sh
+# Build
+cargo near build
+```
 
-# Create fresh account if you wish, which is good practice
-near delete crossword.friend.testnet friend.testnet
-near create-account crossword.friend.testnet --masterAccount friend.testnet
+Create fresh account if you wish, which is good practice:
 
-# Deploy
-near deploy crossword.friend.testnet --wasmFile res/crossword_tutorial_chapter_2.wasm --initFunction new --initArgs '{"owner_id": "crossword.friend.testnet"}'
-# Add the crossword puzzle
-near call crossword.friend.testnet new_puzzle '{"solution_hash":"d1a5cf9ad1adefe0528f7d31866cf901e665745ff172b96892693769ad284010","answers":[{"num": 1,"start": {"x": 1,"y": 1},"direction": "Down","length": 5,"clue": "NFT market on NEAR that specializes in cards and comics."},{"num": 2,"start": {"x": 0,"y": 2},"direction": "Across","length": 13,"clue": "You can move assets between NEAR and different chains, including Ethereum, by visiting ______.app"},{"num": 3,"start": {"x": 9,"y": 1},"direction": "Down","length": 8,"clue": "NFT market on NEAR with art, physical items, tickets, and more."},{"num": 4,"start": {"x": 3,"y": 8},"direction": "Across","length": 9,"clue": "The smallest denomination of the native token on NEAR."},{"num": 5,"start": {"x": 5,"y": 8},"direction": "Down","length": 3,"clue": "You typically deploy a smart contract with the NEAR ___ tool."}]}' --accountId crossword.friend.testnet
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
   
-# Return to the project root and start the React app
+  ```bash
+  # Delete an account
+  near delete-account crossword.friend.testnet friend.testnet --networkId testnet
+  
+  # Create an account again
+  near create-account crossword.friend.testnet --use-account friend.testnet --initial-balance 1 --network-id testnet
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+  
+  ```bash
+  # Delete an account
+  near account delete-account crossword.friend.testnet beneficiary friend.testnet network-config testnet sign-with-keychain send
+
+  # Create an account again
+  near account create-account fund-myself crossword.friend.testnet '1 NEAR' autogenerate-new-keypair save-to-keychain sign-as friend.testnet network-config testnet sign-with-keychain send
+  ```
+  </TabItem>
+</Tabs>
+
+Deploy the contract:
+
+```bash
+cargo near deploy build-non-reproducible-wasm crossword.friend.testnet with-init-call new json-args '{"owner_id": "crossword.friend.testnet"}' prepaid-gas '100.0 Tgas' attached-deposit '0 NEAR' network-config testnet sign-with-keychain send
+```
+
+Add the crossword puzzle:
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+  
+  ```bash
+  near call crossword.friend.testnet new_puzzle '{"solution_hash":"d1a5cf9ad1adefe0528f7d31866cf901e665745ff172b96892693769ad284010","answers":[{"num": 1,"start": {"x": 1,"y": 1},"direction": "Down","length": 5,"clue": "NFT market on NEAR that specializes in cards and comics."},{"num": 2,"start": {"x": 0,"y": 2},"direction": "Across","length": 13,"clue": "You can move assets between NEAR and different chains, including Ethereum, by visiting ______.app"},{"num": 3,"start": {"x": 9,"y": 1},"direction": "Down","length": 8,"clue": "NFT market on NEAR with art, physical items, tickets, and more."},{"num": 4,"start": {"x": 3,"y": 8},"direction": "Across","length": 9,"clue": "The smallest denomination of the native token on NEAR."},{"num": 5,"start": {"x": 5,"y": 8},"direction": "Down","length": 3,"clue": "You typically deploy a smart contract with the NEAR ___ tool."}]}' --gas 100000000000000 --accountId crossword.friend.testnet --networkId testnet
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+  
+  ```bash
+  near contract call-function as-transaction crossword.friend.testnet new_puzzle json-args '{"solution_hash":"d1a5cf9ad1adefe0528f7d31866cf901e665745ff172b96892693769ad284010","answers":[{"num": 1,"start": {"x": 1,"y": 1},"direction": "Down","length": 5,"clue": "NFT market on NEAR that specializes in cards and comics."},{"num": 2,"start": {"x": 0,"y": 2},"direction": "Across","length": 13,"clue": "You can move assets between NEAR and different chains, including Ethereum, by visiting ______.app"},{"num": 3,"start": {"x": 9,"y": 1},"direction": "Down","length": 8,"clue": "NFT market on NEAR with art, physical items, tickets, and more."},{"num": 4,"start": {"x": 3,"y": 8},"direction": "Across","length": 9,"clue": "The smallest denomination of the native token on NEAR."},{"num": 5,"start": {"x": 5,"y": 8},"direction": "Down","length": 3,"clue": "You typically deploy a smart contract with the NEAR ___ tool."}]}' prepaid-gas '100.0 Tgas' attached-deposit '0 NEAR' sign-as crossword.friend.testnet network-config testnet sign-with-keychain send
+  ```
+  </TabItem>
+</Tabs>
+
+Return to the project root and start the React app:
+
+```bash
 cd ..
 env CONTRACT_NAME=crossword.friend.testnet npm run start
 ```
@@ -156,15 +204,33 @@ For fun, try interacting with the smart contract using the React frontend and th
 
 Before and after solving the puzzle, run this command:
 
-    near view crossword.friend.testnet get_puzzle_status '{"solution_hash": "d1a5cf9ad1adefe0528f7d31866cf901e665745ff172b96892693769ad284010"}'
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+  
+  ```bash
+  near view crossword.friend.testnet get_puzzle_status '{"solution_hash": "d1a5cf9ad1adefe0528f7d31866cf901e665745ff172b96892693769ad284010"}' --networkId testnet
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+  
+  ```bash
+  near contract call-function as-read-only crossword.friend.testnet get_puzzle_status json-args '{"solution_hash": "d1a5cf9ad1adefe0528f7d31866cf901e665745ff172b96892693769ad284010"}' network-config testnet now
+  ```
+  </TabItem>
+</Tabs>
 
 This will return our enum `PuzzleStatus`. Before solving the puzzle it should print:
 
+```json
     'Unsolved'
+```
 
 and after:
 
+```json
     { Solved: { memo: 'Yay I won!' } }
+```
 
 After you solve the crossword puzzle you'll see a screen with a link to NEAR Explorer to look at the details of the transaction. Notice we have our `Transfer` Action in there:
 

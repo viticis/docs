@@ -3,15 +3,12 @@ id: upgrade-contract
 title: Upgrading the Contract
 sidebar_label: Upgrade a Contract
 ---
+import {Github} from "@site/src/components/codetabs"
 
 In this tutorial, you'll build off the work you previously did to implement the [minting functionality](/tutorials/nfts/js/minting) on a skeleton smart contract. You got to the point where NFTs could be minted, however, the wallet had no way of displaying the tokens since your contract didn't implement the method that the wallet was trying to call.
 
 
-:::caution
 
-The JS-SDK is currently in **[`Alpha`](https://github.com/near/near-sdk-js/releases/)**. 
-
-:::
 
 ## Introduction
 
@@ -23,7 +20,7 @@ Upgrading contracts, when done right, can be an immensely powerful tool. If done
 
 The NEAR Runtime will read the serialized state from disk and it will attempt to load it using the current contract code. When your code changes, it might not be able to figure out how to do this.
 
-You need to strategically upgrade your contracts and make sure that the runtime will be able to read your current state with the new contract code. For more information about upgrading contracts and some best practices, see the NEAR SDK's [upgrading contracts](/sdk/rust/building/prototyping) write-up.
+You need to strategically upgrade your contracts and make sure that the runtime will be able to read your current state with the new contract code. For more information about upgrading contracts and some best practices, see the NEAR SDK's [upgrading contracts](../../../2.build/2.smart-contracts/release/upgrade.md) write-up.
 
 ## Modifications to our contract {#modifications-to-contract}
 
@@ -35,9 +32,7 @@ Luckily, you wrote a function `nft_token` which takes a token ID and returns a `
 
 As for the pagination, you can use some basic JavaScript to get that done. Let's move over to the `enumeration.ts` file and implement that logic:
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/enumeration.ts#L47-L82
-```
+<Github language="js" start="47" end="82" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/enumeration.ts" />
 
 ## Redeploying the contract {#redeploying-contract}
 
@@ -94,7 +89,7 @@ near view $NFT_CONTRACT_ID nft_tokens_for_owner '{"account_id": "'$NFT_CONTRACT_
 
 ## Viewing NFTs in the wallet {#viewing-nfts-in-wallet}
 
-Now that your contract implements the necessary functions that the wallet uses to display NFTs, you should be able to see your tokens on display in the [collectibles tab](https://wallet.testnet.near.org/?tab=collectibles).
+Now that your contract implements the necessary functions that the wallet uses to display NFTs, you should be able to see your tokens on display in the [collectibles tab](https://testnet.mynearwallet.com//?tab=collectibles).
 
 ![filled-nft-in-wallet](/docs/assets/nfts/filled-nft-in-wallet.png)
 
@@ -102,4 +97,13 @@ Now that your contract implements the necessary functions that the wallet uses t
 
 In this tutorial, you learned about the basics of [upgrading contracts](#upgrading-contracts). Then, you implemented the necessary [modifications to your smart contract](#modifications-to-contract) and [redeployed it](#redeploying-contract). Finally you navigated to the wallet collectibles tab and [viewed your NFTs](#viewing-nfts-in-wallet).
 
-In the [next tutorial](/tutorials/nfts/js/enumeration), you'll implement the remaining functions needed to complete the [enumeration](https://nomicon.io/Standards/NonFungibleToken/Enumeration.html) standard.
+In the [next tutorial](/tutorials/nfts/js/enumeration), you'll implement the remaining functions needed to complete the [enumeration](https://nomicon.io/Standards/Tokens/NonFungibleToken/Enumeration) standard.
+
+:::note Versioning for this article
+
+At the time of this writing, this example works with the following versions:
+
+- near-cli: `3.0.0`
+- NFT standard: [NEP171](https://nomicon.io/Standards/Tokens/NonFungibleToken/Core), version `1.0.0`
+
+:::

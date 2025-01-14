@@ -11,120 +11,18 @@ The RPC API enables you to send transactions and query their status.
 
 ---
 
-## Send transaction (async) {#send-transaction-async}
+## Send transaction {#send-tx}
 
-> Sends a transaction and immediately returns transaction hash.
+> Sends transaction.
+> Returns the guaranteed execution status and the results the blockchain can provide at the moment.
 
-- method: `broadcast_tx_async`
-- params: [SignedTransaction encoded in base64]
+- method: `send_tx`
+- params: 
+  - `signed_tx_base64`: SignedTransaction encoded in base64
+  - [Optional] `wait_until`: the required minimal execution level. [Read more here](#tx-status-result). The default value is `EXECUTED_OPTIMISTIC`.
 
-Example:
-
-<Tabs>
-<TabItem value="json" label="JSON" default>
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": "dontcare",
-  "method": "broadcast_tx_async",
-  "params": [
-    "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDwAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldNMnL7URB1cxPOu3G8jTqlEwlcasagIbKlAJlF5ywVFLAQAAAAMAAACh7czOG8LTAAAAAAAAAGQcOG03xVSFQFjoagOb4NBBqWhERnnz45LY4+52JgZhm1iQKz7qAdPByrGFDQhQ2Mfga8RlbysuQ8D8LlA6bQE="
-  ]
-}
-```
-
-</TabItem>
-<TabItem value="http" label="HTTPie">
-
-```bash
-http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=broadcast_tx_async \
-    params:='[
-        "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDwAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldNMnL7URB1cxPOu3G8jTqlEwlcasagIbKlAJlF5ywVFLAQAAAAMAAACh7czOG8LTAAAAAAAAAGQcOG03xVSFQFjoagOb4NBBqWhERnnz45LY4+52JgZhm1iQKz7qAdPByrGFDQhQ2Mfga8RlbysuQ8D8LlA6bQE="
-    ]'
-```
-
-</TabItem>
-</Tabs>
-
-Example response:
-
-```json
-{
-  "jsonrpc": "2.0",
-  "result": "6zgh2u9DqHHiXzdy9ouTP7oGky2T4nugqzqt9wJZwNFm",
-  "id": "dontcare"
-}
-```
-
-Final transaction results can be queried using [Transaction Status](#transaction-status)
-or [NEAR Explorer](https://explorer.testnet.near.org/) using the above `result` hash returning a result similar to the example below.
-
-![NEAR-Explorer-transactionHash](/docs/assets/NEAR-Explorer-transactionHash.png)
-
-#### What could go wrong? {#what-could-go-wrong}
-
-When API request fails, RPC server returns a structured error response with a limited number of well-defined error variants, so client code can exhaustively handle all the possible error cases. Our JSON-RPC errors follow [verror](https://github.com/joyent/node-verror) convention for structuring the error response:
-
-
-```json
-{
-    "error": {
-        "name": <ERROR_TYPE>,
-        "cause": {
-            "info": {..},
-            "name": <ERROR_CAUSE>
-        },
-        "code": -32000,
-        "data": String,
-        "message": "Server error",
-    },
-    "id": "dontcare",
-    "jsonrpc": "2.0"
-}
-```
-
-> **Heads up**
->
-> The fields `code`, `data`, and `message` in the structure above are considered legacy ones and might be deprecated in the future. Please, don't rely on them.
-
-Here is the exhaustive list of the error variants that can be returned by `broadcast_tx_async` method:
-
-<table class="custom-stripe">
-  <thead>
-    <tr>
-      <th>
-        ERROR_TYPE<br />
-        <code>error.name</code>
-      </th>
-      <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
-      <th>Reason</th>
-      <th>Solution</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr class="stripe">
-      <td>REQUEST_VALIDATION_ERROR</td>
-      <td>PARSE_ERROR</td>
-      <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
-      <td>
-        <ul>
-          <li>Check the arguments passed and pass the correct ones</li>
-          <li>Check <code>error.cause.info</code> for more details</li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
----
-
-## Send transaction (await) {#send-transaction-await}
-
-> Sends a transaction and waits until transaction is fully complete. _(Has a 10 second timeout)_
-
-- method: `broadcast_tx_commit`
-- params: `[SignedTransaction encoded in base64]`
+Using `send_tx` with `wait_until = NONE` is equal to legacy `broadcast_tx_async` method.  
+Using `send_tx` with finality `wait_until = EXECUTED_OPTIMISTIC` is equal to legacy `broadcast_tx_commit` method.
 
 Example:
 
@@ -135,10 +33,11 @@ Example:
 {
   "jsonrpc": "2.0",
   "id": "dontcare",
-  "method": "broadcast_tx_commit",
-  "params": [
-    "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDQAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldIODI4YfV/QS++blXpQYT+bOsRblTRW4f547y/LkvMQ9AQAAAAMAAACh7czOG8LTAAAAAAAAAAXcaTJzu9GviPT7AD4mNJGY79jxTrjFLoyPBiLGHgBi8JK1AnhK8QknJ1ourxlvOYJA2xEZE8UR24THmSJcLQw="
-  ]
+  "method": "send_tx",
+  "params": {
+    "signed_tx_base64": "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDwAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldNMnL7URB1cxPOu3G8jTqlEwlcasagIbKlAJlF5ywVFLAQAAAAMAAACh7czOG8LTAAAAAAAAAGQcOG03xVSFQFjoagOb4NBBqWhERnnz45LY4+52JgZhm1iQKz7qAdPByrGFDQhQ2Mfga8RlbysuQ8D8LlA6bQE=",
+    "wait_until": "INCLUDED_FINAL"
+  }
 }
 ```
 
@@ -146,10 +45,18 @@ Example:
 <TabItem value="http" label="HTTPie">
 
 ```bash
-http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=broadcast_tx_commit \
-    params:='[
-        "DwAAAG5lYXJrYXQudGVzdG5ldABuTi5L1rwnlb35hc9tn5WELkxfiGfGh1Q5aeGNQDejo0QAAAAAAAAAEAAAAGpvc2hmb3JkLnRlc3RuZXSiWAc6W9KlqXS5fK+vjFRDV5pAxHRKU0srKX/cmdRTBgEAAAADAAAAoe3MzhvC0wAAAAAAAAB9rOE9zc5zQYLL1j6VTh3I4fQbERs6I07gJfrAC6jo8DB4HolR9Xps3v4qrZxkgZjwv6wB0QOROM4UEbeOaBoB"
-    ]'
+http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=send_tx \
+    params:='{
+      "signed_tx_base64": "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDwAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldNMnL7URB1cxPOu3G8jTqlEwlcasagIbKlAJlF5ywVFLAQAAAAMAAACh7czOG8LTAAAAAAAAAGQcOG03xVSFQFjoagOb4NBBqWhERnnz45LY4+52JgZhm1iQKz7qAdPByrGFDQhQ2Mfga8RlbysuQ8D8LlA6bQE=",
+      "wait_until": "EXECUTED"
+    }'
+```
+
+```bash
+http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=send_tx \
+    params:='{
+      "signed_tx_base64": "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDwAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldNMnL7URB1cxPOu3G8jTqlEwlcasagIbKlAJlF5ywVFLAQAAAAMAAACh7czOG8LTAAAAAAAAAGQcOG03xVSFQFjoagOb4NBBqWhERnnz45LY4+52JgZhm1iQKz7qAdPByrGFDQhQ2Mfga8RlbysuQ8D8LlA6bQE="
+    }'
 ```
 
 </TabItem>
@@ -163,6 +70,7 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=broadcast_
 {
   "jsonrpc": "2.0",
   "result": {
+    "final_execution_status": "FINAL",
     "status": {
       "SuccessValue": ""
     },
@@ -236,7 +144,7 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=broadcast_
 </p>
 </details>
 
-#### What could go wrong? {#what-could-go-wrong-1}
+#### What could go wrong? {#what-could-go-wrong-send-tx}
 
 When API request fails, RPC server returns a structured error response with a limited number of well-defined error variants, so client code can exhaustively handle all the possible error cases. Our JSON-RPC errors follow [verror](https://github.com/joyent/node-verror) convention for structuring the error response:
 
@@ -264,7 +172,7 @@ When API request fails, RPC server returns a structured error response with a li
 
 Here is the exhaustive list of the error variants that can be returned by `broadcast_tx_commit` method:
 
-<table class="custom-stripe">
+<table className="custom-stripe">
   <thead>
     <tr>
       <th>
@@ -272,6 +180,7 @@ Here is the exhaustive list of the error variants that can be returned by `broad
         <code>error.name</code>
       </th>
       <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
       <th>Reason</th>
       <th>Solution</th>
     </tr>
@@ -280,27 +189,32 @@ Here is the exhaustive list of the error variants that can be returned by `broad
     <tr>
       <td rowspan="2">HANDLER_ERROR</td>
       <td>INVALID_TRANSACTION</td>
+      <td>200</td>
       <td>An error happened during transaction execution</td>
       <td>
         <ul>
-          <li>See <code>error.cause.info</code> for details</li>
+          <li>See <code>error.cause.info</code> for details, likely a field in the transaction was invalid</li>
+          <li>If <code>error.cause.info</code> is <code>ShardCongested</code>, resubmit the identical transaction after a delay. (Consider adding a priority fee once [NEP-541](https://github.com/near/NEPs/pull/541) is released.)</li>
+          <li>If <code>error.cause.info</code> is <code>ShardStuck</code>, you may also resubmit the identical transaction after a delay</li>
         </ul>
       </td>
     </tr>
     <tr>
       <td>TIMEOUT_ERROR</td>
+      <td>408</td>
       <td>Transaction was routed, but has not been recorded on chain in 10 seconds.</td>
       <td>
         <ul>
-          <li> Re-submit the request with the identical transaction (in NEAR Protocol unique transactions apply exactly once, so if the previously sent transaction gets applied, this request will just return the known result, otherwise, it will route the transaction to the chain once again)</li>
+          <li> Resubmit the request with the identical transaction (in NEAR Protocol unique transactions apply exactly once, so if the previously sent transaction gets applied, this request will just return the known result, otherwise, it will route the transaction to the chain once again)</li>
           <li>Check that your transaction is valid</li>
           <li>Check that the signer account id has enough tokens to cover the transaction fees (keep in mind that some tokens on each account are locked to cover the storage cost)</li>
         </ul>
       </td>
     </tr>
-    <tr class="stripe">
+    <tr className="stripe">
       <td>REQUEST_VALIDATION_ERROR</td>
       <td>PARSE_ERROR</td>
+      <td>400</td>
       <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
       <td>
         <ul>
@@ -312,6 +226,7 @@ Here is the exhaustive list of the error variants that can be returned by `broad
     <tr>
       <td>INTERNAL_ERROR</td>
       <td>INTERNAL_ERROR</td>
+      <td>500</td>
       <td>Something went wrong with the node itself or overloaded</td>
       <td>
         <ul>
@@ -332,8 +247,13 @@ Here is the exhaustive list of the error variants that can be returned by `broad
 
 - method: `tx`
 - params:
-  - `transaction hash` _(see [NEAR Explorer](https://explorer.testnet.near.org) for a valid transaction hash)_
-  - `sender account id`
+  - `tx_hash` _(see [NearBlocks Explorer](https://testnet.nearblocks.io) for a valid transaction hash)_
+  - `sender_account_id` _(used to determine which shard to query for transaction)_
+  - [Optional] `wait_until`: the required minimal execution level. Read more [here](/api/rpc/transactions#tx-status-result). The default value is `EXECUTED_OPTIMISTIC`.
+
+A Transaction status request with `wait_until != NONE` will wait until the transaction appears on the blockchain.
+If the transaction does not exist, the method will wait until the timeout is reached.
+If you only need to check whether the transaction exists, use `wait_until = NONE`, it will return the response immediately.
 
 Example:
 
@@ -345,18 +265,12 @@ Example:
   "jsonrpc": "2.0",
   "id": "dontcare",
   "method": "tx",
-  "params": ["6zgh2u9DqHHiXzdy9ouTP7oGky2T4nugqzqt9wJZwNFm", "sender.testnet"]
+  "params": {
+    "tx_hash": "6zgh2u9DqHHiXzdy9ouTP7oGky2T4nugqzqt9wJZwNFm",
+    "sender_account_id": "sender.testnet",
+    "wait_until": "EXECUTED"
+  }
 }
-```
-
-</TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
-
-```js
-const response = await near.connection.provider.txStatus(
-  "6zgh2u9DqHHiXzdy9ouTP7oGky2T4nugqzqt9wJZwNFm",
-  "sender.testnet"
-);
 ```
 
 </TabItem>
@@ -364,7 +278,7 @@ const response = await near.connection.provider.txStatus(
 
 ```bash
 http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=tx \
-    params:='[ "6zgh2u9DqHHiXzdy9ouTP7oGky2T4nugqzqt9wJZwNFm", "sender.testnet"]'
+    params:='{"tx_hash": "6zgh2u9DqHHiXzdy9ouTP7oGky2T4nugqzqt9wJZwNFm", "sender_account_id": "sender.testnet"}'
 ```
 
 </TabItem>
@@ -378,6 +292,7 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=tx \
 {
   "jsonrpc": "2.0",
   "result": {
+    "final_execution_status": "FINAL",
     "status": {
       "SuccessValue": ""
     },
@@ -470,36 +385,6 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=tx \
 </p>
 </details>
 
-<blockquote class="warning">
-<strong>heads up</strong><br /><br />
-
-In the case of function call transactions, this query will not wait for **all** receipts generated by this transaction to finish before returning a result. Rather, it will only wait for its return value to finish before returning; _which could be a promise_.
-
-Let's say a transaction only contains a "function call" action that calls a `transfer()` method like the one below _(written in [Rust](https://www.rust-lang.org/))_. It will only wait for the "function call" receipt, not necessarily the receipt from the actual transfer of funds to finish before returning a result.
-
-```rust
-pub fn transfer(receiver_id: String) {
-    Promise::new(receiver_id).transfer(10);
-}
-```
-
-However, if we slightly modify the function to have the promise as a return value, then the `tx` status query will wait for this promise to finish _before_ returning results.
-
-```rust
-pub fn transfer_promise(receiver_id: String) -> Promise {
-    Promise::new(receiver_id).transfer(10)
-}
-```
-
-Despite such design, the `tx` endpoint can be used to check whether all receipts have finished.
-
-Instead of looking at the main result `status`, we can check all of the receipts
-returned `status` and see if any are `Unknown`. If none of the receipts statuses are unknown, we can be certain that all receipts generated have finished.
-
-In addition, `tx` endpoint does not provide finality guarantees. To make sure that the entire execution is final, it suffices to ensure every `block_hash` in every outcome is `final`.
-
-</blockquote>
-
 #### What could go wrong? {#what-could-go-wrong-2}
 
 When API request fails, RPC server returns a structured error response with a limited number of well-defined error variants, so client code can exhaustively handle all the possible error cases. Our JSON-RPC errors follow [verror](https://github.com/joyent/node-verror) convention for structuring the error response:
@@ -528,7 +413,7 @@ When API request fails, RPC server returns a structured error response with a li
 
 Here is the exhaustive list of the error variants that can be returned by `tx` method:
 
-<table class="custom-stripe">
+<table className="custom-stripe">
   <thead>
     <tr>
       <th>
@@ -536,6 +421,7 @@ Here is the exhaustive list of the error variants that can be returned by `tx` m
         <code>error.name</code>
       </th>
       <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
       <th>Reason</th>
       <th>Solution</th>
     </tr>
@@ -544,6 +430,7 @@ Here is the exhaustive list of the error variants that can be returned by `tx` m
     <tr>
       <td rowspan="3">HANDLER_ERROR</td>
       <td>INVALID_TRANSACTION</td>
+      <td>200</td>
       <td>An error happened during transaction execution</td>
       <td>
         <ul>
@@ -553,17 +440,19 @@ Here is the exhaustive list of the error variants that can be returned by `tx` m
     </tr>
     <tr>
       <td>UNKNOWN_TRANSACTION</td>
+      <td>200</td>
       <td>The requested transaction is not available on the node since it might have not been recorded on the chain yet or has been garbage-collected</td>
       <td>
         <ul>
           <li>Try again later</li>
-          <li>If the transaction had been submitted more than 5 epochs ago, try to send your request to <a href="https://near-nodes.io/intro/node-types#archival-node">an archival node</a></li>
+          <li>If the transaction had been submitted more than 5 epochs ago, try to send your request to <a href="https://near-nodes.io/intro/node-types#archival-node" target="_blank" rel="noopener noreferrer">an archival node</a></li>
           <li>Check the transaction hash</li>
         </ul>
       </td>
     </tr>
     <tr>
       <td>TIMEOUT_ERROR</td>
+      <td>408</td>
       <td>It was unable to wait for the transaction status for reasonable time</td>
       <td>
         <ul>
@@ -572,9 +461,10 @@ Here is the exhaustive list of the error variants that can be returned by `tx` m
         </ul>
       </td>
     </tr>
-    <tr class="stripe">
+    <tr className="stripe">
       <td>REQUEST_VALIDATION_ERROR</td>
       <td>PARSE_ERROR</td>
+      <td>400</td>
       <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
       <td>
         <ul>
@@ -586,6 +476,7 @@ Here is the exhaustive list of the error variants that can be returned by `tx` m
     <tr>
       <td>INTERNAL_ERROR</td>
       <td>INTERNAL_ERROR</td>
+      <td>500</td>
       <td>Something went wrong with the node itself or overloaded</td>
       <td>
         <ul>
@@ -606,8 +497,14 @@ Here is the exhaustive list of the error variants that can be returned by `tx` m
 
 - method: `EXPERIMENTAL_tx_status`
 - params:
-  - `transaction hash` _(see [NEAR Explorer](https://explorer.testnet.near.org) for a valid transaction hash)_
-  - `sender account id` _(used to determine which shard to query for transaction)_
+  - `tx_hash` _(see [NearBlocks Explorer](https://testnet.nearblocks.io) for a valid transaction hash)_
+  - `sender_account_id` _(used to determine which shard to query for transaction)_
+  - [Optional] `wait_until`: the required minimal execution level. Read more [here](/api/rpc/transactions#tx-status-result). The default value is `EXECUTED_OPTIMISTIC`.
+
+A Transaction status request with `wait_until != NONE` will wait until the transaction appears on the blockchain.
+If the transaction does not exist, the method will wait until the timeout is reached.
+If you only need to check whether the transaction exists, use `wait_until = NONE`, it will return the response immediately.
+
 
 Example:
 
@@ -619,31 +516,26 @@ Example:
   "jsonrpc": "2.0",
   "id": "dontcare",
   "method": "EXPERIMENTAL_tx_status",
-  "params": ["HEgnVQZfs9uJzrqTob4g2Xmebqodq9waZvApSkrbcAhd", "bowen"]
+  "params": {
+    "tx_hash": "HEgnVQZfs9uJzrqTob4g2Xmebqodq9waZvApSkrbcAhd",
+    "sender_account_id": "bowen",
+    "wait_until": "EXECUTED"
+  }
 }
-```
-
-</TabItem>
-<TabItem value="🌐 JavaScript" label="JavaScript">
-
-```js
-const response = await near.connection.provider.experimental_txStatus(
-  "HEgnVQZfs9uJzrqTob4g2Xmebqodq9waZvApSkrbcAhd",
-  "bowen"
-);
 ```
 
 </TabItem>
 <TabItem value="http" label="HTTPie">
 
 ```bash
-http post https://rpc.testnet.near.org jsonrpc=2.0 method=EXPERIMENTAL_tx_status params:='["HEgnVQZfs9uJzrqTob4g2Xmebqodq9waZvApSkrbcAhd", "bowen"]' id=dontcare
+http post https://rpc.testnet.near.org jsonrpc=2.0 method=EXPERIMENTAL_tx_status params:='{"tx_hash": "HEgnVQZfs9uJzrqTob4g2Xmebqodq9waZvApSkrbcAhd", "sender_account_id": "bowen"}' id=dontcare
 ```
 
 </TabItem>
 </Tabs>
 
-<details><summary>Example response:</summary>
+<details>
+<summary>Example response:</summary>
 <p>
 
 ```json
@@ -651,6 +543,7 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 method=EXPERIMENTAL_tx_status
   "id": "123",
   "jsonrpc": "2.0",
   "result": {
+    "final_execution_status": "FINAL",
     "receipts": [
       {
         "predecessor_id": "bowen",
@@ -904,7 +797,7 @@ When API request fails, RPC server returns a structured error response with a li
 
 Here is the exhaustive list of the error variants that can be returned by `EXPERIMENTAL_tx_status` method:
 
-<table class="custom-stripe">
+<table className="custom-stripe">
   <thead>
     <tr>
       <th>
@@ -912,6 +805,7 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
         <code>error.name</code>
       </th>
       <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
       <th>Reason</th>
       <th>Solution</th>
     </tr>
@@ -920,6 +814,7 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
     <tr>
       <td rowspan="3">HANDLER_ERROR</td>
       <td>INVALID_TRANSACTION</td>
+      <td>200</td>
       <td>An error happened during transaction execution</td>
       <td>
         <ul>
@@ -929,17 +824,19 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
     </tr>
     <tr>
       <td>UNKNOWN_TRANSACTION</td>
+      <td>200</td>
       <td>The requested transaction is not available on the node since it might have not been recorded on the chain yet or has been garbage-collected</td>
       <td>
         <ul>
           <li>Try again later</li>
-          <li>If the transaction had been submitted more than 5 epochs ago, try to send your request to <a href="https://near-nodes.io/intro/node-types#archival-node">an archival node</a></li>
+          <li>If the transaction had been submitted more than 5 epochs ago, try to send your request to <a href="https://near-nodes.io/intro/node-types#archival-node" target="_blank" rel="noopener noreferrer">an archival node</a></li>
           <li>Check the transaction hash</li>
         </ul>
       </td>
     </tr>
     <tr>
       <td>TIMEOUT_ERROR</td>
+      <td>408</td>
       <td>It was unable to wait for the transaction status for reasonable time</td>
       <td>
         <ul>
@@ -948,9 +845,10 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
         </ul>
       </td>
     </tr>
-    <tr class="stripe">
+    <tr className="stripe">
       <td>REQUEST_VALIDATION_ERROR</td>
       <td>PARSE_ERROR</td>
+      <td>400</td>
       <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
       <td>
         <ul>
@@ -962,6 +860,7 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
     <tr>
       <td>INTERNAL_ERROR</td>
       <td>INTERNAL_ERROR</td>
+      <td>500</td>
       <td>Something went wrong with the node itself or overloaded</td>
       <td>
         <ul>
@@ -978,11 +877,11 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
 
 ### Receipt by ID {#receipt-by-id}
 
-> Fetches a receipt by it's ID (as is, without a status or execution outcome)
+> Fetches a receipt by its ID (as is, without a status or execution outcome)
 
 - method: `EXPERIMENTAL_receipt`
 - params:
-  - `receipt_id` _(see [NEAR Explorer](https://explorer.testnet.near.org) for a valid receipt id)_
+  - `receipt_id` _(see [NearBlocks Explorer](https://testnet.nearblocks.io) for a valid receipt id)_
 
 Example:
 
@@ -1008,7 +907,8 @@ http post https://rpc.testnet.near.org jsonrpc=2.0 method=EXPERIMENTAL_receipt p
 </TabItem>
 </Tabs>
 
-<details><summary>Example response:</summary>
+<details>
+<summary>Example response:</summary>
 <p>
 
 ```json
@@ -1078,6 +978,7 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
         <code>error.name</code>
       </th>
       <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
       <th>Reason</th>
       <th>Solution</th>
     </tr>
@@ -1086,6 +987,7 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
     <tr>
       <td>HANDLER_ERROR</td>
       <td>UNKNOWN_RECEIPT</td>
+      <td>200</td>
       <td>The receipt with the given <code>receipt_id</code> was never observed on the node</td>
       <td>
         <ul>
@@ -1097,6 +999,7 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
     <tr>
       <td>REQUEST_VALIDATION_ERROR</td>
       <td>PARSE_ERROR</td>
+      <td>400</td>
       <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
       <td>
         <ul>
@@ -1108,6 +1011,368 @@ Here is the exhaustive list of the error variants that can be returned by `EXPER
     <tr>
       <td>INTERNAL_ERROR</td>
       <td>INTERNAL_ERROR</td>
+      <td>500</td>
+      <td>Something went wrong with the node itself or overloaded</td>
+      <td>
+        <ul>
+          <li>Try again later</li>
+          <li>Send a request to a different node</li>
+          <li>Check <code>error.cause.info</code> for more details</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## Transaction Execution Levels {#tx-status-result}
+
+All the methods listed above have `wait_until` request parameter, and `final_execution_status` response value.
+They correspond to the same enum `TxExecutionStatus`.
+See the detailed explanation for all the options:
+
+```rust
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum TxExecutionStatus {
+  /// Transaction is waiting to be included into the block
+  None,
+  /// Transaction is included into the block. The block may be not finalized yet
+  Included,
+  /// Transaction is included into the block +
+  /// All non-refund transaction receipts finished their execution.
+  /// The corresponding blocks for tx and each receipt may be not finalized yet
+  #[default]
+  ExecutedOptimistic,
+  /// Transaction is included into finalized block
+  IncludedFinal,
+  /// Transaction is included into finalized block +
+  /// All non-refund transaction receipts finished their execution.
+  /// The corresponding blocks for each receipt may be not finalized yet
+  Executed,
+  /// Transaction is included into finalized block +
+  /// Execution of all transaction receipts is finalized, including refund receipts
+  Final,
+}
+```
+
+---
+
+# Deprecated methods {#deprecated}
+
+## [deprecated] Send transaction (async) {#send-transaction-async}
+
+> Consider using [`send_tx`](/api/rpc/transactions#send-tx) instead
+
+> Sends a transaction and immediately returns transaction hash.
+
+- method: `broadcast_tx_async`
+- params: [SignedTransaction encoded in base64]
+
+Example:
+
+<Tabs>
+<TabItem value="json" label="JSON" default>
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "dontcare",
+  "method": "broadcast_tx_async",
+  "params": [
+    "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDwAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldNMnL7URB1cxPOu3G8jTqlEwlcasagIbKlAJlF5ywVFLAQAAAAMAAACh7czOG8LTAAAAAAAAAGQcOG03xVSFQFjoagOb4NBBqWhERnnz45LY4+52JgZhm1iQKz7qAdPByrGFDQhQ2Mfga8RlbysuQ8D8LlA6bQE="
+  ]
+}
+```
+
+</TabItem>
+<TabItem value="http" label="HTTPie">
+
+```bash
+http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=broadcast_tx_async \
+    params:='[
+        "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDwAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldNMnL7URB1cxPOu3G8jTqlEwlcasagIbKlAJlF5ywVFLAQAAAAMAAACh7czOG8LTAAAAAAAAAGQcOG03xVSFQFjoagOb4NBBqWhERnnz45LY4+52JgZhm1iQKz7qAdPByrGFDQhQ2Mfga8RlbysuQ8D8LlA6bQE="
+    ]'
+```
+
+</TabItem>
+</Tabs>
+
+Example response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "result": "6zgh2u9DqHHiXzdy9ouTP7oGky2T4nugqzqt9wJZwNFm",
+  "id": "dontcare"
+}
+```
+
+Final transaction results can be queried using [Transaction Status](#transaction-status)
+or [NearBlocks Explorer](https://testnet.nearblocks.io/) using the above `result` hash returning a result similar to the example below.
+
+![NEAR-Explorer-transactionHash](/docs/assets/NEAR-Explorer-transactionHash.png)
+
+#### What could go wrong? {#what-could-go-wrong}
+
+When API request fails, RPC server returns a structured error response with a limited number of well-defined error variants, so client code can exhaustively handle all the possible error cases. Our JSON-RPC errors follow [verror](https://github.com/joyent/node-verror) convention for structuring the error response:
+
+
+```json
+{
+    "error": {
+        "name": <ERROR_TYPE>,
+        "cause": {
+            "info": {..},
+            "name": <ERROR_CAUSE>
+        },
+        "code": -32000,
+        "data": String,
+        "message": "Server error",
+    },
+    "id": "dontcare",
+    "jsonrpc": "2.0"
+}
+```
+
+> **Heads up**
+>
+> The fields `code`, `data`, and `message` in the structure above are considered legacy ones and might be deprecated in the future. Please, don't rely on them.
+
+Here is the exhaustive list of the error variants that can be returned by `broadcast_tx_async` method:
+
+<table class="custom-stripe">
+  <thead>
+    <tr>
+      <th>
+        ERROR_TYPE<br />
+        <code>error.name</code>
+      </th>
+      <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
+      <th>Reason</th>
+      <th>Solution</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="stripe">
+      <td>REQUEST_VALIDATION_ERROR</td>
+      <td>PARSE_ERROR</td>
+      <td>400</td>
+      <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
+      <td>
+        <ul>
+          <li>Check the arguments passed and pass the correct ones</li>
+          <li>Check <code>error.cause.info</code> for more details</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+## [deprecated] Send transaction (await) {#send-transaction-await}
+
+> Consider using [`send_tx`](/api/rpc/transactions#send-tx) instead
+
+> Sends a transaction and waits until transaction is fully complete. _(Has a 10 second timeout)_
+
+- method: `broadcast_tx_commit`
+- params: `[SignedTransaction encoded in base64]`
+
+Example:
+
+<Tabs>
+<TabItem value="json" label="JSON" default>
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "dontcare",
+  "method": "broadcast_tx_commit",
+  "params": [
+    "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDQAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldIODI4YfV/QS++blXpQYT+bOsRblTRW4f547y/LkvMQ9AQAAAAMAAACh7czOG8LTAAAAAAAAAAXcaTJzu9GviPT7AD4mNJGY79jxTrjFLoyPBiLGHgBi8JK1AnhK8QknJ1ourxlvOYJA2xEZE8UR24THmSJcLQw="
+  ]
+}
+```
+
+</TabItem>
+<TabItem value="http" label="HTTPie">
+
+```bash
+http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=broadcast_tx_commit \
+    params:='[
+        "DwAAAG5lYXJrYXQudGVzdG5ldABuTi5L1rwnlb35hc9tn5WELkxfiGfGh1Q5aeGNQDejo0QAAAAAAAAAEAAAAGpvc2hmb3JkLnRlc3RuZXSiWAc6W9KlqXS5fK+vjFRDV5pAxHRKU0srKX/cmdRTBgEAAAADAAAAoe3MzhvC0wAAAAAAAAB9rOE9zc5zQYLL1j6VTh3I4fQbERs6I07gJfrAC6jo8DB4HolR9Xps3v4qrZxkgZjwv6wB0QOROM4UEbeOaBoB"
+    ]'
+```
+
+</TabItem>
+</Tabs>
+
+<details>
+<summary>Example response: </summary>
+<p>
+
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "final_execution_status": "FINAL",
+    "status": {
+      "SuccessValue": ""
+    },
+    "transaction": {
+      "signer_id": "sender.testnet",
+      "public_key": "ed25519:Gowpa4kXNyTMRKgt5W7147pmcc2PxiFic8UHW9rsNvJ6",
+      "nonce": 13,
+      "receiver_id": "receiver.testnet",
+      "actions": [
+        {
+          "Transfer": {
+            "deposit": "1000000000000000000000000"
+          }
+        }
+      ],
+      "signature": "ed25519:7oCBMfSHrZkT7tzPDBxxCd3tWFhTES38eks3MCZMpYPJRfPWKxJsvmwQiVBBxRLoxPTnXVaMU2jPV3MdFKZTobH",
+      "hash": "ASS7oYwGiem9HaNwJe6vS2kznx2CxueKDvU9BAYJRjNR"
+    },
+    "transaction_outcome": {
+      "proof": [],
+      "block_hash": "9MzuZrRPW1BGpFnZJUJg6SzCrixPpJDfjsNeUobRXsLe",
+      "id": "ASS7oYwGiem9HaNwJe6vS2kznx2CxueKDvU9BAYJRjNR",
+      "outcome": {
+        "logs": [],
+        "receipt_ids": ["BLV2q6p8DX7pVgXRtGtBkyUNrnqkNyU7iSksXG7BjVZh"],
+        "gas_burnt": 223182562500,
+        "tokens_burnt": "22318256250000000000",
+        "executor_id": "sender.testnet",
+        "status": {
+          "SuccessReceiptId": "BLV2q6p8DX7pVgXRtGtBkyUNrnqkNyU7iSksXG7BjVZh"
+        }
+      }
+    },
+    "receipts_outcome": [
+      {
+        "proof": [],
+        "block_hash": "5Hpj1PeCi32ZkNXgiD1DrW4wvW4Xtic74DJKfyJ9XL3a",
+        "id": "BLV2q6p8DX7pVgXRtGtBkyUNrnqkNyU7iSksXG7BjVZh",
+        "outcome": {
+          "logs": [],
+          "receipt_ids": ["3sawynPNP8UkeCviGqJGwiwEacfPyxDKRxsEWPpaUqtR"],
+          "gas_burnt": 223182562500,
+          "tokens_burnt": "22318256250000000000",
+          "executor_id": "receiver.testnet",
+          "status": {
+            "SuccessValue": ""
+          }
+        }
+      },
+      {
+        "proof": [],
+        "block_hash": "CbwEqMpPcu6KwqVpBM3Ry83k6M4H1FrJjES9kBXThcRd",
+        "id": "3sawynPNP8UkeCviGqJGwiwEacfPyxDKRxsEWPpaUqtR",
+        "outcome": {
+          "logs": [],
+          "receipt_ids": [],
+          "gas_burnt": 0,
+          "tokens_burnt": "0",
+          "executor_id": "sender.testnet",
+          "status": {
+            "SuccessValue": ""
+          }
+        }
+      }
+    ]
+  },
+  "id": "dontcare"
+}
+```
+
+</p>
+</details>
+
+#### What could go wrong? {#what-could-go-wrong-1}
+
+When API request fails, RPC server returns a structured error response with a limited number of well-defined error variants, so client code can exhaustively handle all the possible error cases. Our JSON-RPC errors follow [verror](https://github.com/joyent/node-verror) convention for structuring the error response:
+
+
+```json
+{
+    "error": {
+        "name": <ERROR_TYPE>,
+        "cause": {
+            "info": {..},
+            "name": <ERROR_CAUSE>
+        },
+        "code": -32000,
+        "data": String,
+        "message": "Server error",
+    },
+    "id": "dontcare",
+    "jsonrpc": "2.0"
+}
+```
+
+> **Heads up**
+>
+> The fields `code`, `data`, and `message` in the structure above are considered legacy ones and might be deprecated in the future. Please, don't rely on them.
+
+Here is the exhaustive list of the error variants that can be returned by `broadcast_tx_commit` method:
+
+<table class="custom-stripe">
+  <thead>
+    <tr>
+      <th>
+        ERROR_TYPE<br />
+        <code>error.name</code>
+      </th>
+      <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
+      <th>Reason</th>
+      <th>Solution</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">HANDLER_ERROR</td>
+      <td>INVALID_TRANSACTION</td>
+      <td>200</td>
+      <td>An error happened during transaction execution</td>
+      <td>
+        <ul>
+          <li>See <code>error.cause.info</code> for details, likely a field in the transaction was invalid</li>
+          <li>If <code>error.cause.info</code> is <code>ShardCongested</code>, resubmit the identical transaction after a delay. (Consider adding a priority fee once [NEP-541](https://github.com/near/NEPs/pull/541) is released.)</li>
+          <li>If <code>error.cause.info</code> is <code>ShardStuck</code>, you may also resubmit the identical transaction after a delay</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>TIMEOUT_ERROR</td>
+      <td>408</td>
+      <td>Transaction was routed, but has not been recorded on chain in 10 seconds.</td>
+      <td>
+        <ul>
+          <li> Resubmit the request with the identical transaction (in NEAR Protocol unique transactions apply exactly once, so if the previously sent transaction gets applied, this request will just return the known result, otherwise, it will route the transaction to the chain once again)</li>
+          <li>Check that your transaction is valid</li>
+          <li>Check that the signer account id has enough tokens to cover the transaction fees (keep in mind that some tokens on each account are locked to cover the storage cost)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr class="stripe">
+      <td>REQUEST_VALIDATION_ERROR</td>
+      <td>PARSE_ERROR</td>
+      <td>400</td>
+      <td>Passed arguments can't be parsed by JSON RPC server (missing arguments, wrong format, etc.)</td>
+      <td>
+        <ul>
+          <li>Check the arguments passed and pass the correct ones</li>
+          <li>Check <code>error.cause.info</code> for more details</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>INTERNAL_ERROR</td>
+      <td>INTERNAL_ERROR</td>
+      <td>500</td>
       <td>Something went wrong with the node itself or overloaded</td>
       <td>
         <ul>
