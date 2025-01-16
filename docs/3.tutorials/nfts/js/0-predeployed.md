@@ -4,21 +4,18 @@ title: Pre-deployed Contract
 sidebar_label: Pre-deployed Contract
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 > Learn how to easily create your own non-fungible tokens without doing any software development by using a readily-available NFT smart contract.
 
-
-:::caution
-
-The JS-SDK is currently in **[`Alpha`](https://github.com/near/near-sdk-js/releases/)**. 
-
-:::
 
 ## Prerequisites
 
 To complete this tutorial successfully, you'll need:
 
-- [A NEAR Wallet](https://wallet.testnet.near.org/create)
-- [NEAR-CLI](/tools/near-cli#setup)
+- [A NEAR Wallet](https://testnet.mynearwallet.com/create)
+- [NEAR-CLI](/tools/near-cli#installation)
 
 ## Using the NFT contract
 
@@ -26,9 +23,22 @@ To complete this tutorial successfully, you'll need:
 
 - Log in to your newly created account with `near-cli` by running the following command in your terminal:
 
-```bash
-near login
-```
+<Tabs groupId="cli-tabs">
+
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near login --networkId testnet
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  near account import-account using-web-wallet network-config testnet
+  ```
+  </TabItem>
+</Tabs>
 
  - Set an environment variable for your account ID to make it easy to copy and paste commands from this tutorial:
 
@@ -54,9 +64,21 @@ NEAR has deployed an NFT contract to the account `nft.examples.testnet` which al
 
 - Run this command in your terminal, however you **must replace the `token_id` value with an UNIQUE string**.
 
-```bash
-near call nft.examples.testnet nft_mint '{"token_id": "TYPE_A_UNIQUE_VALUE_HERE", "receiver_id": "'$NEARID'", "metadata": { "title": "GO TEAM", "description": "The Team Goes", "media": "https://bafybeidl4hjbpdr6u6xvlrizwxbrfcyqurzvcnn5xoilmcqbxfbdwrmp5m.ipfs.dweb.link/", "copies": 1}}' --accountId $NEARID --deposit 0.1
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call nft.examples.testnet nft_mint '{"token_id": "TYPE_A_UNIQUE_VALUE_HERE", "receiver_id": "'$NEARID'", "metadata": { "title": "GO TEAM", "description": "The Team Goes", "media": "https://bafybeidl4hjbpdr6u6xvlrizwxbrfcyqurzvcnn5xoilmcqbxfbdwrmp5m.ipfs.dweb.link/", "copies": 1}}' --accountId $NEARID --deposit 0.1
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction nft.examples.testnet nft_mint json-args '{"token_id": "TYPE_A_UNIQUE_VALUE_HERE", "receiver_id": "'$NEARID'", "metadata": { "title": "GO TEAM", "description": "The Team Goes", "media": "https://bafybeidl4hjbpdr6u6xvlrizwxbrfcyqurzvcnn5xoilmcqbxfbdwrmp5m.ipfs.dweb.link/", "copies": 1}}' prepaid-gas '100.0 Tgas' attached-deposit '0.1 NEAR' sign-as $NEARID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
 
 :::tip
 You can also replace the `media` URL with a link to any image file hosted on your web server.
@@ -70,7 +92,7 @@ You can also replace the `media` URL with a link to any image file hosted on you
 Log [nft.examples.testnet]: EVENT_JSON:{"standard":"nep171","version":"nft-1.0.0","event":"nft_mint","data":[{"owner_id":"benjiman.testnet","token_ids":["TYPE_A_UNIQUE_VALUE_HERE"]}]}
 Transaction Id 8RFWrQvAsm2grEsd1UTASKpfvHKrjtBdEyXu7WqGBPUr
 To see the transaction in the transaction explorer, please open this url in your browser
-https://explorer.testnet.near.org/transactions/8RFWrQvAsm2grEsd1UTASKpfvHKrjtBdEyXu7WqGBPUr
+https://testnet.nearblocks.io/txns/8RFWrQvAsm2grEsd1UTASKpfvHKrjtBdEyXu7WqGBPUr
 ''
 ```
 
@@ -116,7 +138,7 @@ near view nft.examples.testnet nft_tokens_for_owner '{"account_id": "'$NEARID'"}
 
 ***Congratulations! You just minted your first NFT token on the NEAR blockchain!*** 🎉
 
-👉 Now try going to your [NEAR Wallet](http://wallet.testnet.near.org) and view your NFT in the "Collectibles" tab. 👈 
+👉 Now try going to your [NEAR Wallet](https://testnet.mynearwallet.com) and view your NFT in the "Collectibles" tab. 👈 
 
 ---
 
@@ -133,4 +155,6 @@ Now that you're familiar with the process, you can jump to [Contract Architectur
 At the time of this writing, this example works with the following versions:
 
 - near-cli: `3.0.0`
+- NFT standard: [NEP171](https://nomicon.io/Standards/Tokens/NonFungibleToken/Core), version `1.0.0`
+
 :::

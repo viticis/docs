@@ -2,146 +2,247 @@
 id: xcc
 title: Cross Contract Call
 ---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import {CodeTabs, Language, Github} from "@site/components/codetabs"
+import {CodeTabs, Language, Github} from '@site/src/components/codetabs'
+import MovingForwardSupportSection from '@site/src/components/MovingForwardSupportSection';
 
-This example performs the simplest cross-contract call possible: it calls our [Hello NEAR](hello-near.md) example to set and retrieve a greeting.
+This example performs the simplest cross-contract call possible: it calls our [Hello NEAR](https://github.com/near-examples/hello-near-examples) example to set and retrieve a greeting.
 It is one of the simplest examples on making a cross-contract call, and the perfect gateway to the world of interoperative contracts.
 
 :::info Advanced Cross-Contract Calls
-
-Check the tutorial on how to perform cross-contract calls [in batches and in parallel](./advanced-xcc.md)
-
+Check the tutorial on how to perform cross-contract calls [in batches and in parallel](./advanced-xcc)
 :::
 
 ---
 
-## Starting with the Project
-You have two options to start using the project. The first and recommended is to use the app through Gitpod, which will open a web-based interactive environment. The second option is to clone the repository locally, for which you will need to install all the [Prerequisites](../../2.develop/prerequisites.md).
+## Obtaining the Cross Contract Call Example
 
+You have two options to start the project:
 
-<Tabs className="language-tabs" groupId="code-tabs">
+1. You can use the app through `Github Codespaces`, which will open a web-based interactive environment.
+2. Clone the repository locally and use it from your computer.
 
-  <TabItem value="🌐 JavaScript"> 
+| Codespaces                                                                                                                                      | Clone locally                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/near-examples/cross-contract-calls?quickstart=1) | 🌐 `https://github.com/near-examples/cross-contract-calls` |
 
-  | Gitpod                                                                                                                                                                                           | Clone locally                                                                 |
-  | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-  | <a href="https://gitpod.io/#https://github.com/near-examples/cross-contract-hello-js"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" /></a> | 🌐 `https://github.com/near-examples/cross-contract-hello-js.git` |
+---
+
+## Structure of the Example
+
+The smart contract is available in two flavors: Rust and JavaScript
+
+<Tabs groupId="code-tabs">
+
+  <TabItem value="js" label="🌐 JavaScript">
+
+```bash
+┌── sandbox-ts # sandbox testing
+│    ├── hello-near
+│    │    └── hello-near.wasm
+│    └── main.ava.ts
+├── src # contract's code
+│    └── contract.ts
+├── package.json
+├── README.md
+└── tsconfig.json
+```
 
   </TabItem>
 
-  <TabItem value="🦀 Rust">
+  <TabItem value="rust" label="🦀 Rust">
 
-  | Gitpod                                                                                                                                                                                           | Clone locally                                                                 |
-  | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-  | <a href="https://gitpod.io/#https://github.com/near-examples/cross-contract-hello-rust"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" /></a> | 🦀 `https://github.com/near-examples/cross-contract-hello-rust.git` |
+```bash
+┌── tests # sandbox testing
+│    ├── hello-near
+│    │    └── hello-near.wasm
+│    └── tests.rs
+├── src # contract's code
+│    ├── external.rs
+│    └── lib.rs
+├── Cargo.toml # package manager
+├── README.md
+└── rust-toolchain.toml
+```
 
   </TabItem>
-  <TabItem value="🚀 AssemblyScript" >
 
-  | Gitpod                                                                                                                                                                                           | Clone locally                                                                 |
-  | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-  | <a href="https://gitpod.io/#https://github.com/near-examples/docs-examples/blob/main/cross-contract-hello-as"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" /></a> | 🚀 `https://github.com/near-examples/docs-examples` -> cross-contract-hello-as |
-
-  </TabItem>
 </Tabs>
 
-
 ---
 
-### Interacting With the Contract
-Since this example does not have a frontend, we will interact with it through the [NEAR CLI](../../4.tools/cli.md).
-
-<!-- Expand on this explanation adding snippets  -->
-Check the README.md. Briefly, you will need to:
-
-#### 1. Build and Deploy the Contract
-You can automatically compile and deploy the contract in the NEAR testnet by running:
-
-```bash
-./deploy.sh
-```
-
-Once finished, check the `neardev/dev-account` file to find the address in which the contract was deployed:
-
-```bash
-cat ./neardev/dev-account # e.g. dev-1659899566943-21539992274727
-```
-
-#### 2. Get the Greeting
-
-`query_greeting` performs a cross-contract call, calling the `get_greeting()` method from `hello-nearverse.testnet`.
-
-`Call` methods can only be invoked using a NEAR account, since the account needs to pay GAS for the transaction.
-
-```bash
-# Use near-cli to ask the contract to query the greeting
-near call <dev-account> query_greeting --accountId <dev-account>
-```
-
----
+## Smart Contract
 
 ### Contract
 The contract exposes methods to query the greeting and change it. These methods do nothing but calling `get_greeting` and
 `set_greeting` in the `hello-near` example.
 
 <CodeTabs>
-<Language value="🌐 JavaScript" language="ts">
-    <Github fname="contract.ts" 
-            url="https://github.com/near-examples/cross-contract-hello-js/blob/master/contract/src/contract.ts"
+<Language value="js" language="ts">
+    <Github fname="contract.ts"
+            url="https://github.com/near-examples/cross-contract-calls/blob/main/contract-simple-ts/src/contract.ts"
             start="17" end="39" />
   </Language>
-  <Language value="🦀 Rust" language="rust">
+  <Language value="rust" language="rust">
     <Github fname="lib.rs"
-            url="https://github.com/near-examples/cross-contract-hello-rust/blob/main/contract/src/lib.rs"
-            start="24" end="49" />
-  </Language>
-  <Language value="🚀 AssemblyScript" language="ts">
-    <Github fname="index.ts"
-            url="https://github.com/near-examples/docs-examples/blob/main/cross-contract-hello-as/contract/assembly/index.ts"
-            start="11" end="45"/>
+            url="https://github.com/near-examples/cross-contract-calls/blob/main/contract-simple-rs/src/lib.rs"
+            start="22" end="51" />
+            <Github fname="external.rs"
+            url="https://github.com/near-examples/cross-contract-calls/blob/main/contract-simple-rs/src/external.rs"
+            start="2" end="12" />
   </Language>
 </CodeTabs>
 
----
+### Testing the Contract
 
-## Testing
+The contract readily includes a set of unit and sandbox testing to validate its functionality. To execute the tests, run the following commands:
 
-When writing smart contracts it is very important to test all methods exhaustively. In this
-project you have two types of tests: unit and integration. Before digging in them,
-go ahead and perform the tests present in the dApp through the command `yarn test`.
+<Tabs groupId="code-tabs">
+  <TabItem value="js" label="🌐 JavaScript">
 
-### Unit test
+  ```bash
+  cd contract-simple-ts
+  yarn
+  yarn test
+  ```
 
-Unit tests check individual functions in the smart contract. They are written in the
-same language as the smart contract is. 
+  </TabItem>
+  <TabItem value="rust" label="🦀 Rust">
 
-Since this example handles Cross-contract calls, in the unit tests we only test the `initialize`
-method works. This is because unit tests are **cannot test** cross-contract calls.
+  ```bash
+  cd contract-simple-rs
+  cargo test
+  ```
+  </TabItem>
 
-### Integration test
+</Tabs>
+
+:::tip
+The `integration tests` use a sandbox to create NEAR users and simulate interactions with the contract.
+:::
 
 In this project in particular, the integration tests first deploy the `hello-near` contract. Then,
 they test that the cross-contract call correctly sets and retrieves the message. You will find the integration tests
-in `integration-tests/`.
+in `sandbox-ts/` for the JavaScript version and in `tests/` for the Rust version.
 
 <CodeTabs>
-  <Language value="🌐 JavaScript" language="rust">
-    <Github fname="main.test.js"
-            url="https://github.com/near-examples/cross-contract-hello-js/blob/master/integration-tests/src/main.ava.ts"
-            start="9" end="59" />
+  <Language value="js" language="js">
+    <Github fname="main.ava.ts"
+            url="https://github.com/near-examples/cross-contract-calls/blob/main/contract-simple-ts/sandbox-ts/main.ava.ts"
+            start="8" end="52" />
+  </Language>
+  <Language value="rust" language="rust">
+    <Github fname="lib.rs"
+            url="https://github.com/near-examples/cross-contract-calls/blob/main/contract-simple-rs/tests/tests.rs"
+            start="4" end="77" />
   </Language>
 </CodeTabs>
+
+
+<hr class="subsection" />
+
+### Deploying the Contract to the NEAR network
+
+In order to deploy the contract you will need to create a NEAR account.
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  # Create a new account pre-funded by a faucet
+  near create-account <accountId> --useFaucet
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  # Create a new account pre-funded by a faucet
+  near account create-account sponsor-by-faucet-service <my-new-dev-account>.testnet autogenerate-new-keypair save-to-keychain network-config testnet create
+  ```
+  </TabItem>
+</Tabs>
+
+Go into the directory containing the smart contract (`cd contract-advanced-ts` or `cd contract-advanced-rs`), build and deploy it:
+
+<Tabs groupId="code-tabs">
+
+  <TabItem value="js" label="🌐 JavaScript">
+
+    ```bash
+    npm run build
+    near deploy <accountId> ./build/cross_contract.wasm --initFunction new --initArgs '{"hello_account":"hello.near-example.testnet"}'
+    ```
+
+  </TabItem>
+  <TabItem value="rust" label="🦀 Rust">
+  
+  ```bash
+  cargo near deploy build-non-reproducible-wasm <accountId> with-init-call new json-args '{"hello_account":"hello.near-example.testnet"}' prepaid-gas '100.0 Tgas' attached-deposit '0 NEAR' network-config testnet sign-with-keychain send
+
+  ```
+
+  </TabItem>
+
+</Tabs>
+
+<hr class="subsection" />
+
+### CLI: Interacting with the Contract
+
+To interact with the contract through the console, you can use the following commands:
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  # Get message from the hello-near contract
+  # Replace <accountId> with your account ID
+  near call <accountId> query_greeting --accountId <accountId>
+
+  # Set a new message for the hello-near contract
+  # Replace <accountId> with your account ID
+  near call <accountId> change_greeting '{"new_greeting":"XCC Hi"}' --accountId <accountId>
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  # Get message from the hello-near contract
+  # Replace <accountId> with your account ID
+  near contract call-function as-transaction <accountId> query_greeting json-args '{}' prepaid-gas '100.0 Tgas' attached-deposit '0 NEAR' sign-as <accountId> network-config testnet sign-with-keychain send
+
+  # Set a new message for the hello-near contract
+  # Replace <accountId> with your account ID
+  near contract call-function as-transaction <accountId> change_greeting json-args '{"new_greeting":"XCC Hi"}' prepaid-gas '100.0 Tgas' attached-deposit '0 NEAR' sign-as <accountId> network-config testnet sign-with-keychain send
+  ```
+  </TabItem>
+</Tabs>
 
 ---
 
 ## Moving Forward
 
 A nice way to learn is by trying to expand a contract. Modify the cross contract example to use the [guest-book](guest-book.md)
-contract!. In this way, you can try to make a cross-contract call that attaches money. Remember to correctly [handle the callback](../../2.develop/contracts/crosscontract.md#callback-method),
+contract!. In this way, you can try to make a cross-contract call that attaches money. Remember to correctly [handle the callback](/build/smart-contracts/anatomy/crosscontract#callback-function),
 and to return the money to the user in case of error.
 
 ### Advanced Cross Contract Calls
+
 Your contract can perform multiple cross-contract calls in simultaneous, creating promises that execute in parallel, or as a batch transaction. Check the [advanced cross contract calls
-tutorial](./advanced-xcc.md) to learn more.
+tutorial](./advanced-xcc) to learn more.
+
+<MovingForwardSupportSection />
+
+:::note Versioning for this article
+
+At the time of this writing, this example works with the following versions:
+
+- near-cli: `4.0.13`
+- node: `18.19.1`
+- rustc: `1.77.0`
+
+:::

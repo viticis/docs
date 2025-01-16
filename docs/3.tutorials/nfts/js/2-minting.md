@@ -3,15 +3,14 @@ id: minting
 title: Minting
 sidebar_label: Minting
 ---
+import {Github} from "@site/src/components/codetabs";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 This is the first of many tutorials in a series where you'll be creating a complete NFT smart contract from scratch that conforms with all the NEAR [NFT standards](https://nomicon.io/Standards/NonFungibleToken/). Today you'll learn how to create the logic needed to mint NFTs and have them show up in your NEAR wallet. You will be modifying a bare-bones [skeleton smart contract](/tutorials/nfts/js/skeleton) by filling in the necessary code snippets needed to add minting functionalities.
 
 
-:::caution
 
-The JS-SDK is currently in **[`Alpha`](https://github.com/near/near-sdk-js/releases/)**. 
-
-:::
 
 ## Introduction
 
@@ -43,9 +42,7 @@ You need to be able to store important information on the contract such as the l
 
 The first thing to do is add the information to the contract class.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/index.ts#L16-L22
-```
+<Github language="js" start="16" end="22" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/index.ts" />
 
 This allows you to get the information stored in these data structures from anywhere in the contract. The code above has created 3 token specific storages:
 
@@ -62,9 +59,7 @@ We've added the `ownerId` and `metadata` fields as parameters to the function be
 
 This function will default all the collections to be empty and set the `owner` and `metadata` equal to what you pass in.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/index.ts#L24-L43
-```
+<Github language="js" start="24" end="43" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/index.ts" />
 
 More often than not when doing development, you'll need to deploy contracts several times. You can imagine that it might get tedious to have to pass in metadata every single time you want to initialize the contract. For this reason, the metadata has been defaulted with some initial data if it wasn't passed in by the user.
 
@@ -72,25 +67,19 @@ More often than not when doing development, you'll need to deploy contracts seve
 
 Now that you've defined what information to store on the contract itself and you've defined some ways to initialize the contract, you need to define what information should go in the `Token`, `TokenMetadata`, and `NFTContractMetadata` data types.
 
-Let's switch over to the `nft-contract/src/metadata.ts` file as this is where that information will go. If you look at the [standards for metadata](https://nomicon.io/Standards/NonFungibleToken/Metadata.html), you'll find all the necessary information that you need to store for both `TokenMetadata` and `NFTContractMetadata`. Simply fill in the following code.
+Let's switch over to the `nft-contract/src/metadata.ts` file as this is where that information will go. If you look at the [standards for metadata](https://nomicon.io/Standards/Tokens/NonFungibleToken/Metadata), you'll find all the necessary information that you need to store for both `TokenMetadata` and `NFTContractMetadata`. Simply fill in the following code.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/metadata.ts#L12-L104
-```
+<Github language="js" start="12" end="104" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/metadata.ts" />
 
 This now leaves you with the `Token` struct and something called a `JsonToken`. The `Token` struct will hold all the information directly related to the token excluding the metadata. The metadata, if you remember, is stored in a map on the contract in a data structured called `tokenMetadataById`. This allows you to quickly get the metadata for any token by simply passing in the token's ID.
 
 For the `Token` struct, you'll just keep track of the owner for now.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/metadata.ts#L106-L117
-```
+<Github language="js" start="106" end="117" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/metadata.ts" />
 
 The purpose of the `JsonToken` is to hold all the information for an NFT that you want to send back as JSON whenever someone does a view call. This means you'll want to store the owner, token ID, and metadata.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/metadata.ts#L119-L141
-```
+<Github language="js" start="119" end="141" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/metadata.ts" />
 
 :::tip
 Some of you might be thinking _"how come we don't just store all the information in the `Token` struct?"_.
@@ -100,11 +89,9 @@ In addition, some operations might only need the metadata for a token and so hav
 
 #### Function for querying contract metadata
 
-Now that you've defined some of the types that were used in the previous section, let's move on and create the first view function `internalNftMetadata`. This will allow users to query for the contract's metadata as per the [metadata standard](https://nomicon.io/Standards/NonFungibleToken/Metadata.html).
+Now that you've defined some of the types that were used in the previous section, let's move on and create the first view function `internalNftMetadata`. This will allow users to query for the contract's metadata as per the [metadata standard](https://nomicon.io/Standards/Tokens/NonFungibleToken/Metadata).
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/metadata.ts#L143-L150
-```
+<Github language="js" start="143" end="150" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/metadata.ts" />
 
 This function will get the `metadata` object from the contract which is of type `NFTContractMetadata` and will return it.
 
@@ -135,9 +122,7 @@ With those steps outlined, it's important to take into consideration the storage
 
 Now that you've got a good understanding of how everything should play out, let's fill in the necessary code.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/mint.ts#L7-L44
-```
+<Github language="js" start="7" end="44" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/mint.ts" />
 
 You'll notice that we're using some internal methods such as `refundDeposit` and `internalAddTokenToOwner`. We've described the function of `refundDeposit` and as for `internalAddTokenToOwner`, this will add a token to the set of tokens an account owns for the contract's `tokensPerOwner` data structure. You can create these functions in a file called `internal.ts`. Go ahead and create the file. Your new contract architecture should look as follows:
 
@@ -156,9 +141,7 @@ nft-contract
 
 Add the following to your newly created `internal.ts` file.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/internal.ts#L1-L54
-```
+<Github language="js" start="1" end="54" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/internal.ts" />
 
 At this point, the core logic is all in place so that you can mint NFTs. You can use the function `nft_mint` which takes the following parameters:
 
@@ -182,9 +165,7 @@ If you were to go ahead and deploy this contract, initialize it, and mint an NFT
 
 It will take a token ID as a parameter and return the information for that token. The `JsonToken` contains the token ID, the owner ID, and the token's metadata.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/nft_core.ts#L10-L35
-```
+<Github language="js" start="10" end="35" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/nft_core.ts" />
 
 With that finished, it's finally time to build and deploy the contract so you can mint your first NFT.
 
@@ -200,7 +181,7 @@ We've included a very simple way to build the smart contracts throughout this tu
 yarn build:nft
 ```
 
-For deployment, you will need a NEAR account with the keys stored on your local machine. Navigate to the [NEAR wallet](https://wallet.testnet.near.org/) site and create an account.
+For deployment, you will need a NEAR account with the keys stored on your local machine. Navigate to the [NEAR wallet](https://testnet.mynearwallet.com//) site and create an account.
 
 :::info
 Please ensure that you deploy the contract to an account with no pre-existing contracts. It's easiest to simply create a new account or create a sub-account for this tutorial.
@@ -208,9 +189,22 @@ Please ensure that you deploy the contract to an account with no pre-existing co
 
 Log in to your newly created account with `near-cli` by running the following command in your terminal.
 
-```bash
-near login
-```
+<Tabs groupId="cli-tabs">
+
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near login --networkId testnet
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  near account import-account using-web-wallet network-config testnet
+  ```
+  </TabItem>
+</Tabs>
 
 To make this tutorial easier to copy/paste, we're going to set an environment variable for your account ID. In the command below, replace `YOUR_ACCOUNT_NAME` with the account name you just logged in with including the `.testnet` portion:
 
@@ -228,7 +222,7 @@ Verify that the correct account ID is printed in the terminal. If everything loo
 In the root of your NFT project run the following command to deploy your smart contract.
 
 ```bash
-near deploy --wasmFile build/nft.wasm --accountId $NFT_CONTRACT_ID
+cargo near deploy build-non-reproducible-wasm $NFT_CONTRACT_ID
 ```
 
 At this point, the contract should have been deployed to your account and you're ready to move onto testing and minting NFTs.
@@ -237,9 +231,21 @@ At this point, the contract should have been deployed to your account and you're
 
 The very first thing you need to do once the contract has been deployed is to initialize it. For simplicity, let's call the default metadata initialization function you wrote earlier so that you don't have to type the metadata manually in the CLI.
 
-```bash
-near call $NFT_CONTRACT_ID init '{"owner_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call $NFT_CONTRACT_ID init '{"owner_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction $NFT_CONTRACT_ID init json-args '{"owner_id": "'$NFT_CONTRACT_ID'"}' prepaid-gas '100.0 Tgas' attached-deposit '0 NEAR' sign-as $NFT_CONTRACT_ID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
 
 You've just initialized the contract with some default metadata and set your account ID as the owner. At this point, you're ready to call your first view function.
 
@@ -247,9 +253,21 @@ You've just initialized the contract with some default metadata and set your acc
 
 Now that the contract has been initialized, you can call some of the functions you wrote earlier. More specifically, let's test out the function that returns the contract's metadata:
 
-```bash
-near view $NFT_CONTRACT_ID nft_metadata
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near view $NFT_CONTRACT_ID nft_metadata
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-read-only $NFT_CONTRACT_ID nft_metadata json-args '{}' network-config testnet now
+    ```
+  </TabItem>
+</Tabs>
 
 This should return an output similar to the following:
 
@@ -263,9 +281,7 @@ At this point, you're ready to move on and mint your first NFT.
 
 Let's now call the minting function that you've created. This requires a `token_id` and `metadata`. If you look back at the `TokenMetadata` struct you created earlier, there are many fields that could potentially be stored on-chain:
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/metadata.ts#L91-L102
-```
+<Github language="js" start="91" end="102" url="https://github.com/near-examples/nft-tutorial-js/blob/2.minting/src/nft-contract/metadata.ts" />
 
 Let's mint an NFT with a title, description, and media to start. The media field can be any URL pointing to a media file. We've got an excellent GIF to mint but if you'd like to mint a custom NFT, simply replace our media link with one of your choosing. If you run the following command, it will mint an NFT with the following parameters:
 
@@ -276,9 +292,21 @@ Let's mint an NFT with a title, description, and media to start. The media field
   - _media_: `https://bafybeiftczwrtyr3k7a2k4vutd3amkwsmaqyhrdzlhvpt33dyjivufqusq.ipfs.dweb.link/goteam-gif.gif`
 - **receiver_id**: "'$NFT_CONTRACT_ID'"
 
-```bash
-near call $NFT_CONTRACT_ID nft_mint '{"token_id": "token-1", "metadata": {"title": "My Non Fungible Team Token", "description": "The Team Most Certainly Goes :)", "media": "https://bafybeiftczwrtyr3k7a2k4vutd3amkwsmaqyhrdzlhvpt33dyjivufqusq.ipfs.dweb.link/goteam-gif.gif"}, "receiver_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID --amount 0.1
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call $NFT_CONTRACT_ID nft_mint '{"token_id": "token-1", "metadata": {"title": "My Non Fungible Team Token", "description": "The Team Most Certainly Goes :)", "media": "https://bafybeiftczwrtyr3k7a2k4vutd3amkwsmaqyhrdzlhvpt33dyjivufqusq.ipfs.dweb.link/goteam-gif.gif"}, "receiver_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID --amount 0.1
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction $NFT_CONTRACT_ID nft_mint json-args '{"token_id": "token-1", "metadata": {"title": "My Non Fungible Team Token", "description": "The Team Most Certainly Goes :)", "media": "https://bafybeiftczwrtyr3k7a2k4vutd3amkwsmaqyhrdzlhvpt33dyjivufqusq.ipfs.dweb.link/goteam-gif.gif"}, "receiver_id": "'$NFT_CONTRACT_ID'"}' prepaid-gas '100.0 Tgas' attached-deposit '0.1 NEAR' sign-as $NFT_CONTRACT_ID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
 
 :::info
 The `amount` flag is specifying how much NEAR to attach to the call. Since you need to pay for storage, 0.1 NEAR is attached and you'll get refunded any excess that is unused at the end.
@@ -289,9 +317,21 @@ The `amount` flag is specifying how much NEAR to attach to the call. Since you n
 Now that the NFT has been minted, you can check and see if everything went correctly by calling the `nft_token` function.
 This should return a `JsonToken` which should contain the `token_id`, `owner_id`, and `metadata`.
 
-```bash
-near view $NFT_CONTRACT_ID nft_token '{"token_id": "token-1"}'
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near view $NFT_CONTRACT_ID nft_token '{"token_id": "token-1"}'
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-read-only $NFT_CONTRACT_ID nft_tokens_for_owner json-args '{"token_id": "token-1"}' network-config testnet now
+    ```
+  </TabItem>
+</Tabs>
 
 <details>
 <summary>Example response: </summary>
@@ -316,7 +356,7 @@ near view $NFT_CONTRACT_ID nft_token '{"token_id": "token-1"}'
 
 ## Viewing your NFTs in the wallet
 
-If you navigate to the [collectibles tab](https://wallet.testnet.near.org/?tab=collectibles) in the NEAR wallet, this should list all the NFTs that you own. Currently, It should be empty.
+If you navigate to the [collectibles tab](https://testnet.mynearwallet.com//?tab=collectibles) in the NEAR wallet, this should list all the NFTs that you own. Currently, It should be empty.
 
 We've got a problem. The wallet correctly picked up that you minted an NFT, however, the contract doesn't implement the specific view function that is being called. Behind the scenes, the wallet is trying to call `nft_tokens_for_owner` to get a list of all the NFTs owned by your account on the contract. The only function you've created, however, is the `nft_token` function. It wouldn't be very efficient for the wallet to call `nft_token` for every single NFT that a user has to get information and so they try to call the `nft_tokens_for_owner` function instead.
 
@@ -333,3 +373,13 @@ After the contract was written, it was time to deploy to the blockchain. You [de
 ## Next Steps
 
 In the [next tutorial](/tutorials/nfts/js/upgrade-contract), you'll find out how to deploy a patch fix and what that means so that you can view your NFTs in the wallet.
+
+:::note Versioning for this article
+
+At the time of this writing, this example works with the following versions:
+
+- near-cli: `3.0.0`
+- NFT standard: [NEP171](https://nomicon.io/Standards/Tokens/NonFungibleToken/Core), version `1.0.0`
+- Metadata standard: [NEP177](https://nomicon.io/Standards/Tokens/NonFungibleToken/Metadata), version `2.1.0`
+
+:::

@@ -2,141 +2,301 @@
 id: guest-book
 title: Guest Book
 ---
+
+import {CodeTabs, Language, Github} from '@site/src/components/codetabs';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import {CodeTabs, Language, Github} from "@site/components/codetabs"
+import MovingForwardSupportSection from '@site/src/components/MovingForwardSupportSection';
 
 Our Guest Book example is a simple app composed by two main components:
-  1. A smart contract that stores messages from users, allowing to attach money to them.
-  2. A simple web-based frontend that displays the last 10 messages posted.
+
+1. A smart contract that stores messages from users, allowing to attach money to them.
+2. A simple web-based frontend that displays the last 10 messages posted.
 
 ![img](/docs/assets/examples/guest-book.png)
 
 ---
 
-## Starting the Project
+## Obtaining the Guest book Example
 
-You have two options to start using the project. The first and recommended is to use the app through Gitpod, which will open a web-based interactive environment. The second option is to clone the repository locally, for which you will need to install all the [Prerequisites](../../2.develop/prerequisites.md).
+You have two options to start the Guest book Example.
 
-<Tabs className="language-tabs" groupId="code-tabs">
-  <TabItem value="🌐 JavaScript" >
+1. You can use the app through `GitHub Codespaces`, which will open a web-based interactive environment.
+2. Clone the repository locally and use it from your computer.
 
-  | Gitpod                                                                                                                                                          | Clone locally                                   |
-  | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-  | <a href="https://gitpod.io/#https://github.com/near-examples/guest-book-js.git"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" /></a> | 🌐 `https://github.com/near-examples/guest-book-js` |
+| Codespaces                                                                                                                        | Clone locally                                             |
+|-----------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/near-examples/guest-book-examples) | 🌐 `https://github.com/near-examples/guest-book-examples` |
 
-  </TabItem>
-  <TabItem value="🦀 Rust">
+---
 
-  | Gitpod              | Clone locally         |
-  | ------------------- | --------------------- |
-  | <a href="https://gitpod.io/#https://github.com/near-examples/guest-book-rust.git"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" /></a>  | 🦀 `https://github.com/near-examples/guest-book-rust` |
+## Structure of the Example
 
-  </TabItem>
-  <TabItem value="🚀 AssemblyScript" >
+The example is divided in two main components:
 
-  | Gitpod                                                                                                                                                          | Clone locally                                   |
-  | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-  | <a href="https://gitpod.io/#https://github.com/near-examples/guest-book.git"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" /></a> | 🚀 `https://github.com/near-examples/guest-book` |
+1. The smart contract, available in two flavors: Rust and JavaScript
+2. The frontend, that interacts with an already deployed contract.
 
-  </TabItem>
-</Tabs>
+<Tabs groupId="code-tabs">
 
-
-If you choose Gitpod a new browser window will open automatically with the code, give it a minute and the frontend will pop-up (make sure the pop-up window is not blocked).
-
-If you are running the app locally, enter the directory where you cloned it and use `yarn` to install dependencies, and `yarn start` to start it.
+  <TabItem value="js" label="🌐 JavaScript">
 
 ```bash
-cd guest-book
-yarn
-yarn deploy
-yarn start
+┌── sandbox-ts # sandbox testing
+│    ├── src
+│    │    └── main.ava.ts
+│    ├── ava.config.cjs
+│    └── package.json
+├── src # contract's code
+│    ├── contract.ts
+│    └── model.ts
+├── package.json # package manager
+├── README.md
+└── tsconfig.json # test script
 ```
-Your contract will then be **compiled** and **deployed** to an **account** in the `testnet` network. When done, a browser window should open.
+
+  </TabItem>
+
+  <TabItem value="rust" label="🦀 Rust">
+
+```bash
+┌── tests # workspaces testing
+│    ├── workspaces.rs
+├── src # contract's code
+│    └── lib.rs
+├── Cargo.toml # package manager
+├── README.md
+└── rust-toolchain.toml
+```
+
+  </TabItem>
+
+</Tabs>
 
 ---
 
-## Interacting With the Guest Book
+## Frontend
 
-![img](/docs/assets/examples/guest-book.png)
-*Frontend of the Guest Book app*
+The guest book example includes a frontend that interacts with an already deployed smart contract, allowing user to sign a message.
 
-Go ahead and login with your NEAR account. If you don't have one, you will be able to create one in the moment. Once logged in,
-you will be able to sign a message in the guest book. You can further send some money alongside your message. If you attach
-more than 0.01Ⓝ then your message will be marked as "premium".
+<hr class="subsection" />
+
+### Running the Frontend
+
+To start the frontend you will need to install the dependencies and start the server.
+
+```bash
+cd frontend
+yarn
+yarn dev
+```
+
+Go ahead and login with your NEAR account. If you don't have one, you will be able to create one in the moment. Once logged in, you will be able to sign a message in the guest book. You can further send some money alongside your message. If you attach more than 0.01Ⓝ then your message will be marked as "premium".
+
+<hr class="subsection" />
+
+### Understanding the Frontend
+
+The frontend is a [Next.JS](https://nextjs.org/) project generated by [create-near-app](https://github.com/near/create-near-app). Check `_app.js` and `index.js` to understand how components are displayed and interacting with the contract.
+
+<Language value="js" language="js">
+  <Github fname="_app.js" 
+          url="https://github.com/near-examples/guest-book-examples/blob/main/frontend/src/pages/_app.js"/>
+  <Github fname="index.js" 
+          url="https://github.com/near-examples/guest-book-examples/blob/main/frontend/src/pages/index.js"/>
+</Language>
 
 ---
 
-## Structure of a dApp
+## Smart Contract
 
-Now that you understand what the dApp does, let us take a closer look to its structure:
-
-1. The frontend code lives in the `/frontend` folder.
-2. The smart contract code is in the `/contract` folder.
-
-### Contract
-The contract presents 2 methods: `add_message` and `get_message`.
+The contract presents 3 methods: `add_message`, `get_message` and `total_messages`.
 
 <CodeTabs>
-  <Language value="🌐 JavaScript" language="ts">
-    <Github fname="contract.ts" 
-            url="https://github.com/near-examples/guest-book-js/blob/master/contract/src/contract.ts"
-            start="4" end="24" />
+  <Language value="js" language="ts">
+    <Github fname="contract.ts"
+            url="https://github.com/near-examples/guest-book-examples/blob/main/contract-ts/src/contract.ts"
+            start="4" end="27" />
   </Language>
-  <Language value="🦀 Rust" language="rust">
+  <Language value="rust" language="rust">
     <Github fname="lib.rs"
-            url="https://github.com/near-examples/guest-book-rust/blob/main/contract/src/lib.rs"
-            start="29" end="50" />
+            url="https://github.com/near-examples/guest-book-examples/blob/main/contract-rs/src/lib.rs"
+            start="31" end="64" />
   </Language>
   
 </CodeTabs>
 
-### Frontend
-The frontend is composed by a single HTML file (`/index.html`) and uses REACT. Check `/App.js` and `/index.js` to understand how
-components are displayed in the screen.
+<hr class="subsection" />
 
-You will notice in `/assets/js/index.js` the following code:
+### Testing the Contract
 
-<CodeTabs>
-  <Language value="🌐 JavaScript" language="js">
-    <Github fname="index.js"
-            url="https://github.com/near-examples/guest-book-rust/blob/main/frontend/index.js"
-            start="15" end="25" />
-  </Language>
-</CodeTabs>
+The contract readily includes a set of unit and sandbox testing to validate its functionality. To execute the tests, run the following commands:
 
-It setups the necessary variables and starts the app.
+<Tabs groupId="code-tabs">
+  <TabItem value="js" label="🌐 JavaScript">
 
+```bash
+cd contract-ts
+yarn
+yarn test
+```
+
+  </TabItem>
+  <TabItem value="rust" label="🦀 Rust">
+  
+  ```bash
+  cd contract-rs
+  cargo test
+  ```
+
+  </TabItem>
+
+</Tabs>
+
+:::tip
+The `integration tests` use a sandbox to create NEAR users and simulate interactions with the contract.
+:::
+
+<hr class="subsection" />
+
+### Deploying the Contract to the NEAR network
+
+In order to deploy the contract you will need to create a NEAR account.
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  # Create a new account pre-funded by a faucet
+  near create-account <accountId> --useFaucet
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  # Create a new account pre-funded by a faucet
+  near account create-account sponsor-by-faucet-service <my-new-dev-account>.testnet autogenerate-new-keypair save-to-keychain network-config testnet create
+  ```
+  </TabItem>
+</Tabs>
+
+Go into the directory containing the smart contract (`cd contract-ts` or `cd contract-rs`), build and deploy it:
+
+<Tabs groupId="code-tabs">
+
+  <TabItem value="js" label="🌐 JavaScript">
+
+    ```bash
+    npm run build
+    near deploy <accountId> ./build/guest_book.wasm
+    ```
+
+  </TabItem>
+  <TabItem value="rust" label="🦀 Rust">
+  
+  ```bash
+  cargo near deploy build-non-reproducible-wasm <accountId>
+  ```
+
+  </TabItem>
+
+</Tabs>
+
+:::tip
+To interact with your contract from the [frontend](#frontend), simply replace the variable `CONTRACT_NAME` in the `index.js` file.
+:::
+
+<hr class="subsection" />
+
+### CLI: Interacting with the Contract
+
+To interact with the contract through the console, you can use the following commands.
+
+#### Get messages
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near view guestbook.near-examples.testnet get_messages '{"from_index": "0","limit": "10"}'
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  near contract call-function as-read-only guestbook.near-examples.testnet get_messages json-args '{"from_index": "0","limit": "10"}' network-config testnet now
+  ```
+  </TabItem>
+</Tabs>
+
+<hr class="subsection" />
+
+#### Get total number of messages
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near view guestbook.near-examples.testnet total_messages
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  near contract call-function as-read-only guestbook.near-examples.testnet total_messages json-args {} network-config testnet now
+  ```
+  </TabItem>
+</Tabs>
+
+<hr class="subsection" />
+
+#### Add a message
+
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  # Replace <accountId> with your account ID
+  # Required a text
+  # Optional deposit to make the message premium
+  near call guestbook.near-examples.testnet add_message '{"text":"Hello Near"}' --accountId <accountId> --deposit 0.1
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+  ```bash
+  # Replace <accountId> with your account ID
+  # Required a text
+  # Optional deposit to make the message premium
+  near contract call-function as-transaction guestbook.near-examples.testnet add_message json-args '{"text":"Hello Near"}' prepaid-gas '30.0 Tgas' attached-deposit '0.1 NEAR' sign-as <accountId> network-config testnet sign-with-keychain send
+  ```
+  </TabItem>
+</Tabs>
+
+<hr class="subsection" />
+
+:::tip
+If you're using your own account, replace `guestbook.near-examples.testnet` with your `accountId`.
+:::
 
 ---
 
-## Testing
+## Moving Forward
 
-When writing smart contracts it is very important to test all methods exhaustively. In this
-project you have two types of tests: unit and integration. Before digging in them,
-go ahead and perform the tests present in the dApp through the command `yarn test`.
+A nice way to learn is by trying to expand a contract. You can modify the guestbook example to incorporate a feature where users can give likes to messages. Additionally, implement a method to toggle the like.
 
-### Unit test
+<MovingForwardSupportSection />
 
-Unit tests check individual functions in the smart contract. Right now only rust implements unit testing. 
+:::note Versioning for this article
 
-<CodeTabs>
-  <Language value="🦀 Rust" language="rust">
-    <Github fname="lib.rs"
-            url="https://github.com/near-examples/guest-book-rust/blob/main/contract/src/lib.rs"
-            start="63" end="86" />
-  </Language>
-</CodeTabs>
+At the time of this writing, this example works with the following versions:
 
-### Integration test
+- near-cli: `4.0.13`
+- node: `18.19.1`
+- rustc: `1.77.0`
 
-Integration tests are generally written in JavaScript. They automatically deploy your contract and execute methods on it. In this way, integration tests simulate interactions between the contract and the users in a realistic scenario. You will find the integration tests for `hello-near` in `integration-tests/`.
-
-<CodeTabs>
-  <Language value="🌐 JavaScript" language="js">
-    <Github fname="main.ava.ts"
-            url="https://github.com/near-examples/guest-book-js/blob/master/integration-tests/src/main.ava.ts"
-            start="39" end="59" />
-  </Language>
-</CodeTabs>
+:::

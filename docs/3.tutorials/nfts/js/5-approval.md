@@ -3,14 +3,13 @@ id: approvals
 title: Approvals
 sidebar_label: Approvals
 ---
+import {Github} from "@site/src/components/codetabs";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 In this tutorial you'll learn the basics of an approval management system which will allow you to grant others access to transfer NFTs on your behalf. This is the backbone of all NFT marketplaces and allows for some complex yet beautiful scenarios to happen. If you're joining us for the first time, feel free to clone [this repository](https://github.com/near-examples/nft-tutorial) and checkout the `4.core` branch to follow along.
 
-:::caution
 
-The JS-SDK is currently in **[`Alpha`](https://github.com/near/near-sdk-js/releases/)**. 
-
-:::
 
 
 ```bash
@@ -23,7 +22,7 @@ If you wish to see the finished code for this _Approval_ tutorial, you can find 
 
 ## Introduction
 
-Up until this point you've created a smart contract that allows users to mint and transfer NFTs as well as query for information using the [enumeration standard](https://nomicon.io/Standards/NonFungibleToken/Enumeration.html). As we've been doing in the previous tutorials, let's break down the problem into smaller, more digestible, tasks. Let's first define some of the end goals that we want to accomplish as per the [approval management](https://nomicon.io/Standards/NonFungibleToken/ApprovalManagement.html) extension of the standard. We want a user to have the ability to:
+Up until this point you've created a smart contract that allows users to mint and transfer NFTs as well as query for information using the [enumeration standard](https://nomicon.io/Standards/Tokens/NonFungibleToken/Enumeration). As we've been doing in the previous tutorials, let's break down the problem into smaller, more digestible, tasks. Let's first define some of the end goals that we want to accomplish as per the [approval management](https://nomicon.io/Standards/Tokens/NonFungibleToken/ApprovalManagement) extension of the standard. We want a user to have the ability to:
 
 - Grant other accounts access to transfer their NFTs on a per token basis.
 - Check if an account has access to a specific token.
@@ -124,23 +123,17 @@ The marketplace is inserted into the map and the next approval ID is incremented
 
 Now that you understand the proposed solution to the original problem of allowing an account to transfer your NFT, it's time to implement some of the logic. The first thing you should do is modify the `Token` and `JsonToken` structs to reflect the new changes. Let's switch over to the `nft-contract/src/metadata.ts` file:
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/metadata.ts#L106-L156
-```
+<Github language="js" start="106" end="156" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/metadata.ts" />
 
 You'll then need to initialize both the `approved_account_ids` and `next_approval_id` to their default values when a token is minted. Switch to the `nft-contract/src/mint.ts` file and when creating the `Token` struct to store in the contract, let's set the next approval ID to be 0 and the approved account IDs to be an empty object:
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/mint.ts#L23-L31
-```
+<Github language="js" start="23" end="31" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/mint.ts" />
 
 ### Approving accounts
 
 Now that you've added the support for approved account IDs and the next approval ID on the token level, it's time to add the logic for populating and changing those fields through a function called `nft_approve`. This function should approve an account to have access to a specific token ID. Let's move to the `nft-contract/src/approval.ts` file and edit the `internalNftApprove` function:
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/approval.ts#L9-L73
-```
+<Github language="js" start="9" end="73" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/approval.ts" />
 
 The function will first assert that the user has attached **at least** one yoctoNEAR (which we'll implement soon). This is both for security and to cover storage. When someone approves an account ID, they're storing that information on the contract. As you saw in the [minting tutorial](/tutorials/nfts/js/minting), you can either have the smart contract account cover the storage, or you can have the users cover that cost. The latter is more scalable and it's the approach you'll be working with throughout this tutorial.
 
@@ -168,15 +161,11 @@ By leaving the message field type as just a string, this generalizes the process
 
 Now that the core logic for approving an account is finished, you need to implement the `assertAtLeastOneYocto` and `bytesForApprovedAccountId` functions. Move to the `nft-contract/src/internal.ts` file and copy the following function right below the `assertOneYocto` function.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/internal.ts#L61-L64
-```
+<Github language="js" start="61" end="64" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/internal.ts" />
 
 Next, you'll need to copy the logic for calculating how many bytes it costs to store an account ID. Place this function at the very top of the page:
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/internal.ts#L55-L59
-```
+<Github language="js" start="55" end="59" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/internal.ts" />
 
 Now that the logic for approving accounts is finished, you need to change the restrictions for transferring.
 
@@ -186,9 +175,7 @@ Currently, an NFT can **only** be transferred by its owner. You need to change t
 
 In the `internal.ts` file, you need to change the logic of the `internalTransfer` method as that's where the restrictions are being made. Change the internal transfer function to be the following:
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/internal.ts#L108-L163
-```
+<Github language="js" start="108" end="163" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/internal.ts" />
 
 This will check if the sender isn't the owner and then if they're not, it will check if the sender is in the approval list. If an approval ID was passed into the function, it will check if the sender's actual approval ID stored on the contract matches the one passed in.
 
@@ -196,9 +183,7 @@ This will check if the sender isn't the owner and then if they're not, it will c
 
 While you're in the internal file, you're going to need to add methods for refunding users who have paid for storing approved accounts on the contract when an NFT is transferred. This is because you'll be clearing the `approved_account_ids` object whenever NFTs are transferred and so the storage is no longer being used.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/internal.ts#L13-L28
-```
+<Github language="js" start="13" end="28" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/internal.ts" />
 
 These will be useful in the next section where you'll be changing the `nft_core` functions to include the new approval logic.
 
@@ -209,27 +194,19 @@ Head over to the `nft-contract/src/nft_core.ts` file and the first change that y
 
 For the `nft_transfer` function, the only change that you'll need to make is to pass in the approval ID into the `internalTransfer` function and then refund the previous tokens approved account IDs after the transfer is finished
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/nft_core.ts#L38-L72
-```
+<Github language="js" start="38" end="72" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/nft_core.ts" />
 
 Next, you need to do the same to `nft_transfer_call` but instead of refunding immediately, you need to attach the previous token's approved account IDs to `nft_resolve_transfer` instead as there's still the possibility that the transfer gets reverted.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/nft_core.ts#L74-L135
-```
+<Github language="js" start="74" end="135" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/nft_core.ts" />
 
 You'll also need to add the tokens approved account IDs to the `JsonToken` being returned by `nft_token`.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/nft_core.ts#L10-L36
-```
+<Github language="js" start="10" end="36" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/nft_core.ts" />
 
 Finally, you need to add the logic for refunding the approved account IDs in `internalResolveTransfer`. If the transfer went through, you should refund the owner for the storage being released by resetting the tokens `approved_account_ids` field. If, however, you should revert the transfer, it wouldn't be enough to just not refund anybody. Since the receiver briefly owned the token, they could have added their own approved account IDs and so you should refund them if they did so.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/nft_core.ts#L137-L208
-```
+<Github language="js" start="137" end="208" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/nft_core.ts" />
 
 With that finished, it's time to move on and complete the next task.
 
@@ -239,9 +216,7 @@ Now that the core logic is in place for approving and refunding accounts, it sho
 
 If an approval ID was provided, it should return whether or not the account is approved and has the same approval ID as the one provided. Let's move to the `nft-contract/src/approval.ts` file and add the necessary logic to the `internalNftIsApproved` function.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/approval.ts#L75-L110
-```
+<Github language="js" start="75" end="110" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/approval.ts" />
 
 Let's now move on and add the logic for revoking an account
 
@@ -249,17 +224,13 @@ Let's now move on and add the logic for revoking an account
 
 The next step in the tutorial is to allow a user to revoke a specific account from having access to their NFT. The first thing you'll want to do is assert one yocto for security purposes. You'll then need to make sure that the caller is the owner of the token. If those checks pass, you'll need to remove the passed in account from the tokens approved account IDs and refund the owner for the storage being released.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/approval.ts#L112-L145
-```
+<Github language="js" start="112" end="145" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/approval.ts" />
 
 ## Revoke all accounts
 
 The final step in the tutorial is to allow a user to revoke all accounts from having access to their NFT. This should also assert one yocto for security purposes and make sure that the caller is the owner of the token. You then refund the owner for releasing all the accounts in the map and then clear the `approved_account_ids`.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/approval.ts#L147-L177
-```
+<Github language="js" start="147" end="177" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/approval.ts" />
 
 With that finished, it's time to deploy and start testing the contract.
 
@@ -291,21 +262,57 @@ yarn build && near deploy --wasmFile build/nft.wasm --accountId $APPROVAL_NFT_CO
 
 Since this is a new contract, you'll need to initialize and mint a token. Use the following command to initialize the contract:
 
-```bash
-near call $APPROVAL_NFT_CONTRACT_ID init '{"owner_id": "'$APPROVAL_NFT_CONTRACT_ID'"}' --accountId $APPROVAL_NFT_CONTRACT_ID
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call $APPROVAL_NFT_CONTRACT_ID init '{"owner_id": "'$APPROVAL_NFT_CONTRACT_ID'"}' --accountId $APPROVAL_NFT_CONTRACT_ID
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction $APPROVAL_NFT_CONTRACT_ID init json-args '{"owner_id": "'$APPROVAL_NFT_CONTRACT_ID'"}' prepaid-gas '100.0 Tgas' attached-deposit '0 NEAR' sign-as $APPROVAL_NFT_CONTRACT_ID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
 
 Next, you'll need to mint a token. By running this command, you'll mint a token with a token ID `"approval-token"` and the receiver will be your new account.
 
-```bash
-near call $APPROVAL_NFT_CONTRACT_ID nft_mint '{"token_id": "approval-token", "metadata": {"title": "Approval Token", "description": "testing out the new approval extension of the standard", "media": "https://bafybeiftczwrtyr3k7a2k4vutd3amkwsmaqyhrdzlhvpt33dyjivufqusq.ipfs.dweb.link/goteam-gif.gif"}, "receiver_id": "'$APPROVAL_NFT_CONTRACT_ID'"}' --accountId $APPROVAL_NFT_CONTRACT_ID --amount 0.1
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call $APPROVAL_NFT_CONTRACT_ID nft_mint '{"token_id": "approval-token", "metadata": {"title": "Approval Token", "description": "testing out the new approval extension of the standard", "media": "https://bafybeiftczwrtyr3k7a2k4vutd3amkwsmaqyhrdzlhvpt33dyjivufqusq.ipfs.dweb.link/goteam-gif.gif"}, "receiver_id": "'$APPROVAL_NFT_CONTRACT_ID'"}' --accountId $APPROVAL_NFT_CONTRACT_ID --amount 0.1
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction $APPROVAL_NFT_CONTRACT_ID nft_mint json-args '{"token_id": "approval-token", "metadata": {"title": "Approval Token", "description": "testing out the new approval extension of the standard", "media": "https://bafybeiftczwrtyr3k7a2k4vutd3amkwsmaqyhrdzlhvpt33dyjivufqusq.ipfs.dweb.link/goteam-gif.gif"}, "receiver_id": "'$APPROVAL_NFT_CONTRACT_ID'"}' prepaid-gas '100.0 Tgas' attached-deposit '0.1 NEAR' sign-as $APPROVAL_NFT_CONTRACT_ID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
 
 You can check to see if everything went through properly by calling one of the enumeration functions:
 
-```bash
-near view $APPROVAL_NFT_CONTRACT_ID nft_tokens_for_owner '{"account_id": "'$APPROVAL_NFT_CONTRACT_ID'", "limit": 10}'
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near view $APPROVAL_NFT_CONTRACT_ID nft_tokens_for_owner '{"account_id": "'$APPROVAL_NFT_CONTRACT_ID'", "limit": 10}'
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-read-only $APPROVAL_NFT_CONTRACT_ID nft_tokens_for_owner json-args '{"account_id": "'$APPROVAL_NFT_CONTRACT_ID'", "limit": 10}' network-config testnet now
+    ```
+  </TabItem>
+</Tabs>
 
 This should return an output similar to the following:
 
@@ -332,15 +339,39 @@ At this point, you should have two accounts. One stored under `$NFT_CONTRACT_ID`
 
 Execute the following command to approve the account stored under `$NFT_CONTRACT_ID` to have access to transfer your NFT with an ID `"approval-token"`. You don't need to pass a message since the old account didn't implement the `nft_on_approve` function. In addition, you'll need to attach enough NEAR to cover the cost of storing the account on the contract. 0.1 NEAR should be more than enough and you'll be refunded any excess that is unused.
 
-```bash
-near call $APPROVAL_NFT_CONTRACT_ID nft_approve '{"token_id": "approval-token", "account_id": "'$NFT_CONTRACT_ID'"}' --accountId $APPROVAL_NFT_CONTRACT_ID --deposit 0.1
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call $APPROVAL_NFT_CONTRACT_ID nft_approve '{"token_id": "approval-token", "account_id": "'$NFT_CONTRACT_ID'"}' --accountId $APPROVAL_NFT_CONTRACT_ID --deposit 0.1
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction $APPROVAL_NFT_CONTRACT_ID nft_approve json-args '{"token_id": "approval-token", "account_id": "'$NFT_CONTRACT_ID'"}' prepaid-gas '100.0 Tgas' attached-deposit '0.1 NEAR' sign-as $APPROVAL_NFT_CONTRACT_ID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
 
 If you call the same enumeration method as before, you should see the new approved account ID being returned.
 
-```bash
-near view $APPROVAL_NFT_CONTRACT_ID nft_tokens_for_owner '{"account_id": "'$APPROVAL_NFT_CONTRACT_ID'", "limit": 10}'
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near view $APPROVAL_NFT_CONTRACT_ID nft_tokens_for_owner '{"account_id": "'$APPROVAL_NFT_CONTRACT_ID'", "limit": 10}'
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-read-only $APPROVAL_NFT_CONTRACT_ID nft_tokens_for_owner json-args '{"account_id": "'$APPROVAL_NFT_CONTRACT_ID'", "limit": 10}' network-config testnet now
+    ```
+  </TabItem>
+</Tabs>
 
 This should return an output similar to the following:
 
@@ -363,9 +394,21 @@ This should return an output similar to the following:
 
 Now that you've approved another account to transfer the token, you can test that behavior. You should be able to use the other account to transfer the NFT to itself by which the approved account IDs should be reset. Let's test transferring the NFT with the wrong approval ID:
 
-```bash
-near call $APPROVAL_NFT_CONTRACT_ID nft_transfer '{"receiver_id": "'$NFT_CONTRACT_ID'", "token_id": "approval-token", "approval_id": 1}' --accountId $NFT_CONTRACT_ID --depositYocto 1
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call $APPROVAL_NFT_CONTRACT_ID nft_transfer '{"receiver_id": "'$NFT_CONTRACT_ID'", "token_id": "approval-token", "approval_id": 1}' --accountId $NFT_CONTRACT_ID --depositYocto 1
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction $APPROVAL_NFT_CONTRACT_ID nft_transfer json-args '{"receiver_id": "'$NFT_CONTRACT_ID'", "token_id": "approval-token", "approval_id": 1}' prepaid-gas '100.0 Tgas' attached-deposit '1 yoctoNEAR' sign-as $NFT_CONTRACT_ID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
 
 <details>
 <summary>Example response: </summary>
@@ -384,9 +427,21 @@ kind: {
 
 If you pass the correct approval ID which is `0`, everything should work fine.
 
-```bash
-near call $APPROVAL_NFT_CONTRACT_ID nft_transfer '{"receiver_id": "'$NFT_CONTRACT_ID'", "token_id": "approval-token", "approval_id": 0}' --accountId $NFT_CONTRACT_ID --depositYocto 1
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call $APPROVAL_NFT_CONTRACT_ID nft_transfer '{"receiver_id": "'$NFT_CONTRACT_ID'", "token_id": "approval-token", "approval_id": 0}' --accountId $NFT_CONTRACT_ID --depositYocto 1
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction $APPROVAL_NFT_CONTRACT_ID nft_transfer json-args '{"receiver_id": "'$NFT_CONTRACT_ID'", "token_id": "approval-token", "approval_id": 0}' prepaid-gas '100.0 Tgas' attached-deposit '1 yoctoNEAR' sign-as $NFT_CONTRACT_ID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
 
 If you again call the enumeration method, you should see the owner updated and the approved account IDs reset.
 
@@ -407,15 +462,38 @@ If you again call the enumeration method, you should see the owner updated and t
 
 Let's now test the approval ID incrementing across different owners. If you approve the sub-account that originally minted the token, the approval ID should be 1 now.
 
-```bash
-near call $APPROVAL_NFT_CONTRACT_ID nft_approve '{"token_id": "approval-token", "account_id": "'$APPROVAL_NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID --deposit 0.1
-```
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
+
+  ```bash
+  near call $APPROVAL_NFT_CONTRACT_ID nft_approve '{"token_id": "approval-token", "account_id": "'$APPROVAL_NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID --deposit 0.1
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-transaction $APPROVAL_NFT_CONTRACT_ID nft_approve json-args '{"token_id": "approval-token", "account_id": "'$APPROVAL_NFT_CONTRACT_ID'"}' prepaid-gas '100.0 Tgas' attached-deposit '0.1 NEAR' sign-as $NFT_CONTRACT_ID network-config testnet sign-with-keychain send
+    ```
+  </TabItem>
+</Tabs>
 
 Calling the view function again show now return an approval ID of 1 for the sub-account that was approved.
+<Tabs groupId="cli-tabs">
+  <TabItem value="short" label="Short">
 
-```bash
-near view $APPROVAL_NFT_CONTRACT_ID nft_tokens_for_owner '{"account_id": "'$NFT_CONTRACT_ID'", "limit": 10}'
-```
+  ```bash
+  near view $APPROVAL_NFT_CONTRACT_ID nft_tokens_for_owner '{"account_id": "'$NFT_CONTRACT_ID'", "limit": 10}'
+  ```
+  </TabItem>
+
+  <TabItem value="full" label="Full">
+
+    ```bash
+    near contract call-function as-read-only $APPROVAL_NFT_CONTRACT_ID nft_tokens_for_owner json-args '{"account_id": "'$NFT_CONTRACT_ID'", "limit": 10}' network-config testnet now
+    ```
+  </TabItem>
+</Tabs>
 
 <details>
 <summary>Example response: </summary>
@@ -443,24 +521,29 @@ With the testing finished, you've successfully implemented the approvals extensi
 
 ## Conclusion
 
-Today you went through a lot of logic to implement the [approvals extension](https://nomicon.io/Standards/NonFungibleToken/ApprovalManagement.html) so let's break down exactly what you did.
+Today you went through a lot of logic to implement the [approvals extension](https://nomicon.io/Standards/Tokens/NonFungibleToken/ApprovalManagement) so let's break down exactly what you did.
 
-First, you explored the [basic approach](#basic-solution) of how to solve the problem. You then went through and discovered some of the [problems](#the-problem) with that solution and learned how to [fix it](#the-solution).
+First, you explored the [basic approach](#basic-solution) of how to solve the problem. You then went through and discovered some of the [problems](/tutorials/nfts/js/approvals#the-problem) with that solution and learned how to [fix it](#the-solution).
 
 After understanding what you should do to implement the approvals extension, you started to [modify](#expanding-json-and-token) the JsonToken and Token structs in the contract. You then implemented the logic for [approving accounts](#approving-accounts) and saw how [marketplaces](#marketplace-integrations) are integrated.
 
 After implementing the logic behind approving accounts, you went and [changed the restrictions](#changing-restrictions) needed to transfer NFTs. The last step you did to finalize the approving logic was to go back and edit the [nft_core](#nft-core-changes) files to be compatible with the new changes.
 
-At this point, everything was implemented in order to allow accounts to be approved and you extended the functionality of the [core standard](https://nomicon.io/Standards/NonFungibleToken/Core.html) to allow for approved accounts to transfer tokens.
+At this point, everything was implemented in order to allow accounts to be approved and you extended the functionality of the [core standard](https://nomicon.io/Standards/Tokens/NonFungibleToken/Core) to allow for approved accounts to transfer tokens.
 
 You implemented a view method to [check](#check-if-account-approved) if an account is approved and to finish the coding portion of the tutorial, you implemented the logic necessary to [revoke an account](#revoke-account) as well as [revoke all accounts](#revoke-all-accounts).
 
-After this, the contract code was finished and it was time to move onto testing where you created a [subaccount](#creating-sub-account) and tested the [approving](#approving-an-account) and [transferring](#transferring-the-nft) for your NFTs.
+After this, the contract code was finished and it was time to move onto testing where you created a [subaccount](#creating-sub-account) and tested the [approving](/tutorials/nfts/js/approvals#approving-an-account) and [transferring](#transferring-the-nft) for your NFTs.
 
 In the next tutorial, you'll learn about the royalty standards and how you can interact with NFT marketplaces.
 
-<!--
-## Bonus track
+:::note Versioning for this article
 
-Perhaps we can have a simple marketplace tutorial where NFTs are purchased without royalties? Maybe we can have this tutorial as the start and then we introduce royalties into the marketplace as an extension to the royalty tutorial?
--->
+At the time of this writing, this example works with the following versions:
+
+- near-cli: `3.0.0`
+- NFT standard: [NEP171](https://nomicon.io/Standards/Tokens/NonFungibleToken/Core), version `1.0.0`
+- Enumeration standard: [NEP181](https://nomicon.io/Standards/Tokens/NonFungibleToken/Enumeration), version `1.0.0`
+- Approval standard: [NEP178](https://nomicon.io/Standards/Tokens/NonFungibleToken/ApprovalManagement), version `1.0.0`
+
+:::

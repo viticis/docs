@@ -8,14 +8,16 @@ title: "Implementing the seed phrase logic from the necessary libraries"
 
 There are two separate things we'll want to do:
 
-1. **Create a random seed phrase** for the user when they visit the crossword puzzle. This will be used if they win and don't have a NEAR account and wish to create one. They can then paste this seed phrase into NEAR Wallet afterward to import their account (which is basically like "logging in" and is currently possible at https://wallet.near.org/recover-seed-phrase).
+1. **Create a random seed phrase** for the user when they visit the crossword puzzle. This will be used if they win and don't have a NEAR account and wish to create one. They can then paste this seed phrase into NEAR Wallet afterward to import their account (which is basically like "logging in" and is currently possible at https://testnet.mynearwallet.com/recover-seed-phrase).
 2. **Turn the crossword solution into a key pair**, instead of just hashing it.
 
 ## near-seed-phrase library
 
 We can add the `near-seed-phrase` package to our project with:
 
-    npm install near-seed-phrase --save
+```bash
+npm install near-seed-phrase --save
+```
 
 :::note Code snippets for this chapter
 At this point in the tutorial, it's more difficult to share code snippets that are both meaningful and meant to be copy/pasted into a project.
@@ -33,15 +35,15 @@ let seedPhrase = generateSeedPhrase(); // generateSeedPhrase() returns an object
 localStorage.setItem('playerKeyPair', JSON.stringify(seedPhrase));
 ```
 
-## Parse solution as seed phrase 
+## Parse solution as seed phrase
 
 (This security measure prevents front-running.)
 
 ```js
 import { parseSeedPhrase } from 'near-seed-phrase';
-// Get the seed phrase from the completed puzzle. 
-// The original puzzle creator would have already called this same function with the same inputs and would have 
-// already called `AddKey` on this contract to add the key related to this seed phrase. Here, using this deterministic 
+// Get the seed phrase from the completed puzzle.
+// The original puzzle creator would have already called this same function with the same inputs and would have
+// already called `AddKey` on this contract to add the key related to this seed phrase. Here, using this deterministic
 // function, the front-end will automatically generate that same key based on the inputs from the winner.
 const seedPhrase = parseSolutionSeedPhrase(data, gridData); // returns a string of space-separated words
 // Get the public and private key derived from the seed phrase

@@ -12,13 +12,13 @@ https://github.com/near/near-lake-framework/
 
 ## Description
 
-NEAR Lake Framework is an ecosystem of library companions to [NEAR Lake](/tools/realtime#near-lake-indexer). They allow you to build your own indexer that subscribes to the stream of blocks from the [NEAR Lake](/tools/realtime#near-lake-indexer) data source and create your own logic to process the NEAR Protocol data in the programming languages of your choice (at the moment, there are implementations in [Python](http://pypi.org/project/near-lake-framework), [JavaScript](https://www.npmjs.com/package/near-lake-framework), and [Rust](https://crates.io/crates/near-lake-framework)).
+NEAR Lake Framework is an ecosystem of library companions to [NEAR Lake](/build/data-infrastructure/lake-framework/near-lake). They allow you to build your own indexer that subscribes to the stream of blocks from the [NEAR Lake](/build/data-infrastructure/lake-framework/near-lake) data source and create your own logic to process the NEAR Protocol data in the programming languages of your choice (at the moment, there are implementations in [Python](http://pypi.org/project/near-lake-framework), [JavaScript](https://www.npmjs.com/package/near-lake-framework), and [Rust](https://crates.io/crates/near-lake-framework)).
 
 :::tip NEAR Lake Framework announcement
 
 We have announced the release of NEAR Lake Framework on NEAR Governance Forum.
 
-Please, read the post [there](https://gov.near.org/t/announcement-near-lake-framework-brand-new-word-in-indexer-building-approach/17668).
+Please, read the post [here](https://gov.near.org/t/announcement-near-lake-framework-brand-new-word-in-indexer-building-approach/17668).
 
 :::
 
@@ -34,7 +34,7 @@ Reaction time (framework overhead only) | 0.1s | 0.2-2.2s
 Estimated cost of infrastructure | [$500+/mo](https://near-nodes.io/rpc/hardware-rpc) | [**$20/mo**](#what-is-the-cost-of-running-a-custom-indexer-based-on-near-lake)
 Ease of maintenance | Advanced<br />(need to follow every nearcore upgrade, and sync state) | **Easy**<br />(deploy once and forget)
 How long will it take to start? | days (on mainnet/testnet) | **seconds**
-Ease of local development | Advanced<br />(localnet is a good option, but testing on testnet/mainnet is too heavy) | **Easy**<br />(see [tutorials](/tutorials/indexer/near-lake-state-changes-indexer))
+Ease of local development | Advanced<br />(localnet is a good option, but testing on testnet/mainnet is too heavy) | **Easy**<br />(see [tutorials](/build/data-infrastructure/lake-framework/near-lake-state-changes-indexer))
 Programming languages that a custom indexer can be implemented with | Rust only | **Any**<br />(currently, helper packages are released in [Python](http://pypi.org/project/near-lake-framework), [JavaScript](https://www.npmjs.com/package/near-lake-framework), and [Rust](https://crates.io/crates/near-lake-framework))
 
 
@@ -54,7 +54,7 @@ Getting the blockchain data from S3 will cost around $18.15 per month as NEAR La
 
 Assuming NEAR Protocol produces exactly 1 block per second (which is really not, the average block production time is 1.3s). A full day consists of 86400 seconds, that's the max number of blocks that can be produced.
 
-According the [Amazon S3 prices](https://aws.amazon.com/s3/pricing/?nc1=h_ls) `list` requests are charged for $0.005 per 1000 requests and `get` is charged for $0.0004 per 1000 requests.
+According to the [Amazon S3 prices](https://aws.amazon.com/s3/pricing/?nc1=h_ls) `list` requests are charged for $0.005 per 1000 requests and `get` is charged for $0.0004 per 1000 requests.
 
 Calculations (assuming we are following the tip of the network all the time):
 
@@ -81,6 +81,6 @@ Note, the price depends on the number of shards.
 
 :::note Tutorials
 
-See [Tutorials page](/tutorials/indexer/near-lake-state-changes-indexer)
+See [Tutorials page](/build/data-infrastructure/lake-framework/near-lake-state-changes-indexer)
 
 :::

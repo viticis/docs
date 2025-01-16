@@ -31,7 +31,7 @@ example:
 {
   "jsonrpc": "2.0",
   "id": "dontcare",
-  "method": "maintenance_windows",
+  "method": "EXPERIMENTAL_maintenance_windows",
   "params": {
     "account_id": "node0"
   }
@@ -42,7 +42,7 @@ example:
 <TabItem value="http" label="HTTPie">
 
 ```bash
-http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=maintenance_windows \
+http post https://rpc.testnet.near.org jsonrpc=2.0 id=dontcare method=EXPERIMENTAL_maintenance_windows \
   params:='{
     "account_id": "node0"
   }'
@@ -101,7 +101,7 @@ When API request fails, RPC server returns a structured error response with a li
 
 Here is the exhaustive list of the error variants that can be returned by `maintenance_windows` method:
 
-<table class="custom-stripe">
+<table className="custom-stripe">
   <thead>
     <tr>
       <th>
@@ -109,6 +109,7 @@ Here is the exhaustive list of the error variants that can be returned by `maint
         <code>error.name</code>
       </th>
       <th>ERROR_CAUSE<br /><code>error.cause.name</code></th>
+      <th>Status Code</th>
       <th>Reason</th>
       <th>Solution</th>
     </tr>
@@ -117,6 +118,7 @@ Here is the exhaustive list of the error variants that can be returned by `maint
     <tr>
       <td>INTERNAL_ERROR</td>
       <td>INTERNAL_ERROR</td>
+      <td>500</td>
       <td>Something went wrong with the node itself or overloaded</td>
       <td>
         <ul>

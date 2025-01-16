@@ -136,8 +136,8 @@ where:
 This means each time a transaction is processed a small amount of cryptocurrency is created, so the amount of cryptocurrency in circulation grows over time (of course some amount of tokens should be created to bootstrap the network, e. g. by using [ICO](https://www.investopedia.com/terms/i/initial-coin-offering-ico.asp)).
 
 At a present day, two consensus mechanisms are commonly used:
-- [Proof-of-work](https://www.investopedia.com/terms/p/proof-work.asp) - original consensus mechanism, which is used by Bitcoin and Ethereum. It’s highly criticized for its inefficiency -  processing of new transactions requires “mining”, which is a highly computationally intensive process. Because of this, graphic cards became an endangered species. Another disadvantage - cost of transactions is very high and processing speed is also quite slow.
-- [Proof-of-stake](https://www.investopedia.com/terms/p/proof-stake-pos.asp) - newer consensus mechanism, which doesn’t require significant processing power (and graphic cards). Processing of transactions is usually called “validation”. Newer chains, like NEAR, use it. Ethereum is also currently in a process of switching to this model. Transactions are usually much cheaper and processing speed is faster.
+- [Proof-of-work](https://www.investopedia.com/terms/p/proof-work.asp) - original consensus mechanism, which is currently used by Bitcoin and was used by Ethereum. It’s highly criticized for its inefficiency -  processing of new transactions requires “mining”, which is a highly computationally intensive process. Because of this, graphic cards became an endangered species. Another disadvantage - cost of transactions is very high and processing speed is also quite slow.
+- [Proof-of-stake](https://www.investopedia.com/terms/p/proof-stake-pos.asp) - newer consensus mechanism, which doesn’t require significant processing power (and graphic cards). Processing of transactions is usually called “validation”. Newer chains, like NEAR, use it. Ethereum switched to Proof-of-stake (PoS) mechanism in September 2022. Transactions are usually much cheaper and processing speed is faster.
 
 At this point, we should have enough knowledge to proceed to the next chapter - choosing the best blockchain to build dApps.
 
@@ -153,7 +153,7 @@ There are a lot of blockchains out there and it might be hard to choose the most
 
 Historically, the first blockchain to introduce smart contracts was Ethereum. However, as the number of users grew, transaction speed and cost skyrocketed, and it became apparent that it couldn't handle the demand. So, a number of [scaling solutions](https://ethereum.org/en/developers/docs/scaling/) appeared - [layer 2 chains](https://ethereum.org/en/developers/docs/scaling/#layer-2-scaling), [sidechains](https://ethereum.org/en/developers/docs/scaling/sidechains/), and [plasma chains](https://ethereum.org/en/developers/docs/scaling/plasma/). However, they all use some kind of workarounds with their own unique drawbacks. Ethereum tries to fix the core problem and redesign its network - like switching to a Proof-of-stake consensus, which is ongoing for quite a long time, but exact timeline when all of the problems will be fixed is very unclear.
 
-Meanwhile, a new generation of blockchains started to appear. They learned from the Etherium mistakes, and designed them from ground-up to be fast, cheap and scalable. 
+Meanwhile, a new generation of blockchains started to appear. They learned from the Ethereum mistakes, and designed them from ground-up to be fast, cheap and scalable. 
 Choosing the right one is by no means an easy task, but for us we found the [NEAR](https://near.org/) blockchain to be an ideal solution, because of the following properties:
 - Transactions are cheap and very fast.
 - Designed to be extremely scalable from the beginning. This means we can count that transaction cost and speed will remain stable in the future.

@@ -1,4 +1,4 @@
-name: Check Markdown links
+name: Link Checker
 
 on:
   workflow_dispatch:
@@ -6,17 +6,30 @@ on:
     types: [opened, reopened, synchronize]
     branches:
       - master
-  push:
-    branches:
-      - master
 
 jobs:
-  markdown-link-check:
+  check_links:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: gaurav-nelson/github-action-markdown-link-check@v1
-      with:
-        use-quiet-mode: 'yes'
-        config-file: 'website/mlc_config.json'
-        folder-path: 'docs'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/**/.cache
+          key: |
+            ${{ runner.os }}-docusaurus-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-docusaurus-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: cd ./website && yarn
+
+      - name: Run test
+        run: cd ./website && yarn full-test

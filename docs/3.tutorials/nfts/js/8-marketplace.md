@@ -3,14 +3,11 @@ id: marketplace
 title: Marketplace
 sidebar_label: Marketplace
 ---
+import {Github} from "@site/src/components/codetabs"
 
-In this tutorial, you'll learn the basics of an NFT marketplace contract where you can buy and sell non-fungible tokens for $NEAR. In the previous tutorials, you went through and created a fully fledged NFT contract that incorporates all the standards found in the [NFT standard](https://nomicon.io/Standards/NonFungibleToken). 
+In this tutorial, you'll learn the basics of an NFT marketplace contract where you can buy and sell non-fungible tokens for $NEAR. In the previous tutorials, you went through and created a fully fledged NFT contract that incorporates all the standards found in the [NFT standard](https://nomicon.io/Standards/NonFungibleToken).
 
-:::caution
 
-The JS-SDK is currently in **[`Alpha`](https://github.com/near/near-sdk-js/releases/)**. 
-
-:::
 
 ## Introduction
 
@@ -62,21 +59,19 @@ This file outlines what information is stored on the contract as well as some ot
 
 The first function you'll look at is the constructor function. This takes an `owner_id` as the only parameter and will default all the storage collections to their default values.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/index.ts#L40-L52
-```
+<Github language="js" start="40" end="52" url="https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/index.ts" />
 
 ### Storage management model {#storage-management-model}
 
-Next, let's talk about the storage management model chosen for this contract. On the NFT contract, users attached $NEAR to the calls that needed storage paid for. For example, if someone was minting an NFT, they would need to attach `x` amount of NEAR to cover the cost of storing the data on the contract. 
+Next, let's talk about the storage management model chosen for this contract. On the NFT contract, users attached $NEAR to the calls that needed storage paid for. For example, if someone was minting an NFT, they would need to attach `x` amount of NEAR to cover the cost of storing the data on the contract.
 
-On this marketplace contract, however, the storage model is a bit different. Users will need to deposit $NEAR onto the marketplace to cover the storage costs. Whenever someone puts an NFT for sale, the marketplace needs to store that information which costs $NEAR. Users can either deposit as much NEAR as they want so that they never have to worry about storage again or they can deposit the minimum amount to cover 1 sale on an as-needed basis. 
+On this marketplace contract, however, the storage model is a bit different. Users will need to deposit $NEAR onto the marketplace to cover the storage costs. Whenever someone puts an NFT for sale, the marketplace needs to store that information which costs $NEAR. Users can either deposit as much NEAR as they want so that they never have to worry about storage again or they can deposit the minimum amount to cover 1 sale on an as-needed basis.
 
 You might be thinking about the scenario when a sale is purchased. What happens to the storage that is now being released on the contract? This is why we've introduced a storage withdrawal function. This allows users to withdraw any excess storage that is not being used. Let's go through some scenarios to understand the logic. The required storage for 1 sale is 0.01 NEAR on the marketplace contract.
 
 **Scenario A**
 
-- Benji wants to list his NFT on the marketplace but has never paid for storage. 
+- Benji wants to list his NFT on the marketplace but has never paid for storage.
 - He deposits exactly 0.01 NEAR using the `storage_deposit` method. This will cover 1 sale.
 - He lists his NFT on the marketplace and is now using up 1 out of his prepaid 1 sales and has no more storage left. If he were to call `storage_withdraw`, nothing would happen.
 - Dorian loves his NFT and quickly purchases it before anybody else can. This means that Benji's sale has now been taken down (since it was purchased) and Benji is using up 0 out of his prepaid 1 sales. In other words, he has an excess of 1 sale or 0.01 NEAR.
@@ -90,9 +85,7 @@ You might be thinking about the scenario when a sale is purchased. What happens 
 
 With this behavior in mind, the following two functions outline the logic.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/index.ts#L58-L121
-```
+<Github language="js" start="58" end="121" url="https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/index.ts" />
 
 In this contract, the storage required for each sale is 0.01 NEAR but you can query that information using the `storage_minimum_balance` function. In addition, if you wanted to check how much storage a given account has paid, you can query the `storage_balance_of` function.
 
@@ -108,9 +101,7 @@ The market contract is expecting the message that the user passes into `nft_appr
 
 The `nft_on_approve` function is called via a cross-contract call by the NFT contract. It will make sure that the signer has enough storage to cover adding another sale. It will then attempt to get the sale conditions from the message and create the listing.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/nft_callbacks.ts#L6-L73
-```
+<Github language="js" start="6" end="73" url="https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/nft_callbacks.ts" />
 
 ## sale.ts {#sale-ts}
 
@@ -120,35 +111,27 @@ Now that you're familiar with the process of both adding storage and listing NFT
 
 It's important to understand what information the contract is storing for each sale object. Since the marketplace has many NFTs listed that come from different NFT contracts, simply storing the token ID would not be enough to distinguish between different NFTs. This is why you need to keep track of both the token ID and the contract by which the NFT came from. In addition, for each listing, the contract must keep track of the approval ID it was given to transfer the NFT. Finally, the owner and sale conditions are needed.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/sale.ts#L9-L42
-```
+<Github language="js" start="9" end="42" url="https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/sale.ts" />
 
 ### Removing sales {#removing-sales}
 
 In order to remove a listing, the owner must call the `remove_sale` function and pass the NFT contract and token ID. Behind the scenes, this calls the `internallyRemoveSale` function which you can find in the `internal.ts` file. This will assert one yoctoNEAR for security reasons.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/sale.ts#L44-L65
-```
+<Github language="js" start="44" end="65" url="https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/sale.ts" />
 
 ### Updating price {#updating-price}
 
 In order to update the list price of a token, the owner must call the `update_price` function and pass in the contract, token ID, and desired price. This will get the sale object, change the sale conditions, and insert it back. For security reasons, this function will assert one yoctoNEAR.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/sale.ts#L67-L96
-```
+<Github language="js" start="67" end="96" url="https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/sale.ts" />
 
 ### Purchasing NFTs {#purchasing-nfts}
 
-For purchasing NFTs, you must call the `offer` function. It takes an `nft_contract_id` and `token_id` as parameters. You must attach the correct amount of NEAR to the call in order to purchase. Behind the scenes, this will make sure your deposit is greater than the list price and call a private method `processPurchase` which will perform a cross-contract call to the NFT contract to invoke the `nft_transfer_payout` function. This will transfer the NFT using the [approval management](https://nomicon.io/Standards/NonFungibleToken/ApprovalManagement.html) standard that you learned about and it will return the `Payout` object which includes royalties.
+For purchasing NFTs, you must call the `offer` function. It takes an `nft_contract_id` and `token_id` as parameters. You must attach the correct amount of NEAR to the call in order to purchase. Behind the scenes, this will make sure your deposit is greater than the list price and call a private method `processPurchase` which will perform a cross-contract call to the NFT contract to invoke the `nft_transfer_payout` function. This will transfer the NFT using the [approval management](https://nomicon.io/Standards/Tokens/NonFungibleToken/ApprovalManagement) standard that you learned about and it will return the `Payout` object which includes royalties.
 
 The marketplace will then call `resolve_purchase` where it will check for malicious payout objects and then if everything went well, it will pay the correct accounts.
 
-```js reference
-https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/sale.ts#L98-L131
-```
+<Github language="js" start="98" end="131" url="https://github.com/near-examples/nft-tutorial-js/blob/8.marketplace/src/market-contract/sale.ts" />
 
 ## sale_view.ts {#sale_view-ts}
 
@@ -200,10 +183,19 @@ near view $MARKETPLACE_CONTRACT_ID get_sales_by_nft_contract_id '{"nft_contract_
 
 ## Conclusion
 
-In this tutorial, you learned about the basics of a marketplace contract and how it works. You went through the [index.ts](#index-ts) file and learned about the [initialization function](#initialization-function) in addition to the [storage management](#storage-management-model) model. 
+In this tutorial, you learned about the basics of a marketplace contract and how it works. You went through the [index.ts](#index-ts) file and learned about the initialization function in addition to the [storage management](#storage-management-model) model.
 
 You then went through the [nft_callbacks](#nft_callbacks-ts) file to understand how to [list NFTs](#listing-logic). In addition, you went through some important functions needed for after you've listed an NFT. This includes [removing sales](#removing-sales), [updating the price](#updating-price), and [purchasing NFTs](#purchasing-nfts).
 
-Finally, you went through the enumeration methods found in the [`sale_view`](#sale_view-ts) file. These allow you to query for important information found on the marketplace contract. 
+Finally, you went through the enumeration methods found in the [`sale_view`](#sale_view-ts) file. These allow you to query for important information found on the marketplace contract.
 
 You should now have a solid understanding of NFTs and marketplaces on NEAR. Feel free to branch off and expand on these contracts to create whatever cool applications you'd like. The world is your oyster! Thanks for joining on this journey and don't forget, **Go Team!**
+
+:::note Versioning for this article
+
+At the time of this writing, this example works with the following versions:
+
+- near-cli: `3.0.0`
+- NFT standard: [NEP171](https://nomicon.io/Standards/Tokens/NonFungibleToken/Core), version `1.0.0`
+
+:::
